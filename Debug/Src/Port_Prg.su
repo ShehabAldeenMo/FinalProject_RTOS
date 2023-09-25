@@ -1,0 +1,6 @@
+../Src/Port_Prg.c:43:9:Port_SetPinDirection	16	static
+../Src/Port_Prg.c:78:9:Port_GetVersionInfo	16	static
+../Src/Port_Prg.c:88:6:Port_VidInit	16	static
+../Src/Port_Prg.c:145:19:Port_EnumSetterPin	16	static
+../Src/Port_Prg.c:154:19:Port_VidRunnable	16	static
+../Src/Port_Prg.c:187:9:Port_SetPinMode	16	static

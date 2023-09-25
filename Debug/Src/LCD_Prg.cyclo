@@ -1,0 +1,8 @@
+../Src/LCD_Prg.c:21:6:LCD_VidSendCommend	5
+../Src/LCD_Prg.c:76:6:LCD_VidInit	6
+../Src/LCD_Prg.c:145:6:LCD_VidSendChar	5
+../Src/LCD_Prg.c:194:6:LCD_VidSendString	4
+../Src/LCD_Prg.c:206:8:LCD_U32Pow	2
+../Src/LCD_Prg.c:215:6:LCD_VidPrintVar	5
+../Src/LCD_Prg.c:238:6:LCD_VidPosCur	4
+../Src/LCD_Prg.c:249:6:LCD_VidClear	1

@@ -1,0 +1,5 @@
+../Src/UART_Program.c:126:6:USART_VidInit	24	static
+../Src/UART_Program.c:256:7:USART_ReceiveByte	24	static
+../Src/UART_Program.c:393:6:USART_VidSendChar	16	static
+../Src/UART_Program.c:501:7:USART_TransmitString	24	static
+../Src/UART_Program.c:600:9:USART_ReceiveString	24	static

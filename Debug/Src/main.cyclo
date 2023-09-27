@@ -1,10 +1,8 @@
 ../Src/main.c:55:5:main	5
 ../Src/main.c:92:6:ManagerTask	3
 ../Src/main.c:120:6:ActionTask	3
-../Src/main.c:157:6:Led_Update	9
+../Src/main.c:157:6:Led_Update	7
 ../Src/main.c:207:6:LCD_Update	1
 ../Src/main.c:225:6:LedShape1	2
-../Src/main.c:241:6:LedShape2	2
-../Src/main.c:257:6:LedShape3	2
-../Src/main.c:274:6:LedShape4	2
-../Src/main.c:292:6:TTL_ReciveString	6
+../Src/main.c:243:6:LedShape2	2
+../Src/main.c:298:6:TTL_ReciveString	6

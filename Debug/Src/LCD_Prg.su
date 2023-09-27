@@ -1,8 +1,8 @@
 ../Src/LCD_Prg.c:21:6:LCD_VidSendCommend	40	static
-../Src/LCD_Prg.c:76:6:LCD_VidInit	24	static
-../Src/LCD_Prg.c:145:6:LCD_VidSendChar	40	static
-../Src/LCD_Prg.c:194:6:LCD_VidSendString	24	static
-../Src/LCD_Prg.c:206:8:LCD_U32Pow	24	static
-../Src/LCD_Prg.c:215:6:LCD_VidPrintVar	32	static
-../Src/LCD_Prg.c:238:6:LCD_VidPosCur	24	static
-../Src/LCD_Prg.c:249:6:LCD_VidClear	8	static
+../Src/LCD_Prg.c:78:6:LCD_VidInit	24	static
+../Src/LCD_Prg.c:147:6:LCD_VidSendChar	40	static
+../Src/LCD_Prg.c:198:6:LCD_VidSendString	24	static
+../Src/LCD_Prg.c:210:8:LCD_U32Pow	24	static
+../Src/LCD_Prg.c:219:6:LCD_VidPrintVar	32	static
+../Src/LCD_Prg.c:242:6:LCD_VidPosCur	24	static
+../Src/LCD_Prg.c:253:6:LCD_VidClear	8	static

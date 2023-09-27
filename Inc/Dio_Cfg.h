@@ -1,9 +1,17 @@
 /*
- * Dio_Cfg.h
- *
- *  Created on: Aug 5, 2023
- *      Author: HP
- */
+*@file       Dio_Cfg.h
+*@version    1.0.0
+*@details    It has the cofigurations if driver
+*@author     Shehab aldeen mohammed abdalah
+*/
+
+/*===========================================================================
+*   Project          : AUTOSAR  4.3.1 MCAL
+*   Platform         : ARM
+*   Peripherial      : STM32F103C8T6
+*   SW Version       : 2.0.0
+============================================================================*/
+
 
 #ifndef DIO_CFG_H_
 #define DIO_CFG_H_

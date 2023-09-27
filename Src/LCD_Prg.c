@@ -23,7 +23,7 @@ void LCD_VidSendCommend(uint8 Copy_U8Commend){
 #ifdef EIGHT_BIT
 
 /**************to disable RS *** *********************/
-	Dio_WriteChannel(RS, LOW);
+	Dio_EnumSetterPin(RS, LOW);
 /******to out the value of commend on data port *****/
 	uint8 ArrOfPins_Level[8];
 
@@ -32,13 +32,15 @@ void LCD_VidSendCommend(uint8 Copy_U8Commend){
 	}
 
 	for (uint8 i=0;i<=7;i++){
-		Dio_WriteChannel ( ArrOfPins[i] , ArrOfPins_Level[i] );
+		Dio_EnumSetterPin ( ArrOfPins[i] , ArrOfPins_Level[i] );
 	}
 /*************to make pulse for enable **************/
-	Dio_WriteChannel(E, HIGH);
-	for (uint32 i = 0 ; i < 8000 ; i++);
-	Dio_WriteChannel(E,LOW);
-	for (uint32 i = 0 ; i < 16000 ; i++);
+	Dio_EnumSetterPin(E, HIGH);
+	Dio_VidRunnable();
+	for (uint32 i = 0 ; i < 2000 ; i++);
+	Dio_EnumSetterPin(E,LOW);
+	Dio_VidRunnable();
+	for (uint32 i = 0 ; i < 4000 ; i++);
 #endif
 
 #ifndef EIGHT_BIT
@@ -147,20 +149,22 @@ void LCD_VidSendChar(uint8 Copy_U8Char){
 #ifdef EIGHT_BIT
 	uint8 ArrOfPins_Level[8];
 	/******* to define RS / RW ***********/
-	Dio_WriteChannel(RS,HIGH);
+	Dio_EnumSetterPin(RS,HIGH);
 	/*to define value of character on port*/
 	for (uint8 i=0;i<=7;i++){
 		ArrOfPins_Level[i] = GET_BIT(Copy_U8Char,i);
 	}
 
 	for (uint8 i=0;i<=7;i++){
-		Dio_WriteChannel ( ArrOfPins[i] , ArrOfPins_Level[i] );
+		Dio_EnumSetterPin ( ArrOfPins[i] , ArrOfPins_Level[i] );
 	}
 	/*********to make enable pulse*********/
-	Dio_WriteChannel(E,HIGH);
-	for (uint32 i = 0 ; i < 8000 ; i++);
-	Dio_WriteChannel(E,LOW);
-	for (uint32 i = 0 ; i < 16000 ; i++);
+	Dio_EnumSetterPin(E,HIGH);
+	Dio_VidRunnable();
+	for (uint32 i = 0 ; i < 2000 ; i++);
+	Dio_EnumSetterPin(E,LOW);
+	Dio_VidRunnable();
+	for (uint32 i = 0 ; i < 4000 ; i++);
 #endif
 
 #ifndef EIGHT_BIT

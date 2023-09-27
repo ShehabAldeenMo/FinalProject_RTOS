@@ -17,7 +17,6 @@
 #include <Mcu_Interface.h>
 #include <Mcu_Private.h>
 #include "Mcu_Cfg.h"
-#include "Bit_Math.h"
 
 /* To used in Mcu_Init */
 extern Mcu_ConfigType Config_Clock;
@@ -123,11 +122,11 @@ void Mcu_SetMode (Mcu_ModeType McuMode){
 		RCC->APB1ENR.Reg  = McuMode ;
 	}
 	else if (McuMode >= APB2_PER_AFIO  && McuMode <= APB2_PER_TIM11){
-		CLR_BIT(McuMode,31);
+		McuMode = McuMode & ~(1<<(31));
 		RCC->APB2ENR.Reg  = McuMode ;
 	}
 	else if (McuMode >= AHB_PER_DMA_1  && McuMode <= AHB_PER_SDIO){
-		CLR_BIT(McuMode,30);
+		McuMode = McuMode & ~(1<<(30));
 		RCC->AHBENR.Reg  = McuMode ;
 	}
 	else {

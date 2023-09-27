@@ -194,10 +194,10 @@ void Led_Update(void *pvParameter ){
         	LedShape2();
         	break ;
         case '3' :
-        	LedShape3();
+        	//LedShape3();
         	break ;
         case '4' :
-        	LedShape4();
+        	//LedShape4();
         	break ;
                 }
 	}
@@ -224,15 +224,17 @@ void LCD_Update(void *pvParameter ){
 
 void LedShape1(){
 	for (uint8 i = 0 ; i < 10 ; i++){
-		Dio_WriteChannel(Dio_A9, STD_ON);
-		Dio_WriteChannel(Dio_A10, STD_OFF);
-		Dio_WriteChannel(Dio_A11, STD_OFF);
-		Dio_WriteChannel(Dio_A12, STD_ON);
+		Dio_EnumSetterPin(Dio_A9, STD_ON);
+		Dio_EnumSetterPin(Dio_A10, STD_OFF);
+		Dio_EnumSetterPin(Dio_A11, STD_OFF);
+		Dio_EnumSetterPin(Dio_A12, STD_ON);
+		Dio_VidRunnable();
 		vTaskDelay(pdMS_TO_TICKS(250));
-		Dio_WriteChannel(Dio_A9, STD_OFF);
-		Dio_WriteChannel(Dio_A10, STD_ON);
-		Dio_WriteChannel(Dio_A11, STD_ON);
-		Dio_WriteChannel(Dio_A12, STD_OFF);
+		Dio_EnumSetterPin(Dio_A9, STD_OFF);
+		Dio_EnumSetterPin(Dio_A10, STD_ON);
+		Dio_EnumSetterPin(Dio_A11, STD_ON);
+		Dio_EnumSetterPin(Dio_A12, STD_OFF);
+		Dio_VidRunnable();
 		vTaskDelay(pdMS_TO_TICKS(250));
 	}
 	vTaskResume(TaskManager_Handler);
@@ -240,25 +242,29 @@ void LedShape1(){
 }
 void LedShape2(){
 	for (uint8 i = 0 ; i < 10 ; i++){
-		Dio_WriteChannel(Dio_A9, STD_ON);
-		Dio_WriteChannel(Dio_A10, STD_OFF);
-		Dio_WriteChannel(Dio_A11, STD_ON);
-		Dio_WriteChannel(Dio_A12, STD_OFF);
+		Dio_EnumSetterPin(Dio_A9, STD_ON);
+		Dio_EnumSetterPin(Dio_A10, STD_OFF);
+		Dio_EnumSetterPin(Dio_A11, STD_ON);
+		Dio_EnumSetterPin(Dio_A12, STD_OFF);
+		Dio_VidRunnable();
 		vTaskDelay(pdMS_TO_TICKS(250));
-		Dio_WriteChannel(Dio_A9, STD_OFF);
-		Dio_WriteChannel(Dio_A10, STD_ON);
-		Dio_WriteChannel(Dio_A11, STD_OFF);
-		Dio_WriteChannel(Dio_A12, STD_ON);
+		Dio_EnumSetterPin(Dio_A9, STD_OFF);
+		Dio_EnumSetterPin(Dio_A10, STD_ON);
+		Dio_EnumSetterPin(Dio_A11, STD_OFF);
+		Dio_EnumSetterPin(Dio_A12, STD_ON);
+		Dio_VidRunnable();
 		vTaskDelay(pdMS_TO_TICKS(250));
 	}
 	vTaskResume(TaskManager_Handler);
 	vTaskResume(ActionTask_Handler);
 }
+/*
 void LedShape3(){
-	Dio_WriteChannel(Dio_A9, STD_ON);
-	Dio_WriteChannel(Dio_A10, STD_ON);
-	Dio_WriteChannel(Dio_A11, STD_OFF);
-	Dio_WriteChannel(Dio_A12, STD_OFF);
+	Dio_EnumSetterPin(Dio_A9, STD_ON);
+	Dio_EnumSetterPin(Dio_A10, STD_ON);
+	Dio_EnumSetterPin(Dio_A11, STD_OFF);
+	Dio_EnumSetterPin(Dio_A12, STD_OFF);
+	Dio_VidRunnable();
 	vTaskDelay(pdMS_TO_TICKS(250));
 
 	for (uint8 i = 0 ; i < 10 ; i++){
@@ -287,7 +293,7 @@ void LedShape4(){
 	}
 	vTaskResume(TaskManager_Handler);
 	vTaskResume(ActionTask_Handler);
-}
+}*/
 
 void TTL_ReciveString(){
 	/* declare buffer */

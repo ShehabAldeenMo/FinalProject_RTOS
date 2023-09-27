@@ -1,10 +1,7 @@
-../Src/DIO_Prg.c:39:6:Dio_VidInit	12
-../Src/DIO_Prg.c:84:19:Dio_EnumSetterPin	4
-../Src/DIO_Prg.c:97:13:Dio_EnumGetterPin	3
-../Src/DIO_Prg.c:112:8:Dio_VidRunnable	9
-../Src/DIO_Prg.c:154:19:Dio_ReadChannel	6
-../Src/DIO_Prg.c:177:19:Dio_WriteChannel	12
-../Src/DIO_Prg.c:230:19:Dio_ReadPort	5
-../Src/DIO_Prg.c:250:19:Dio_WritePort	5
-../Src/DIO_Prg.c:272:19:Dio_GetVersionInfo	1
-../Src/DIO_Prg.c:286:19:Dio_FlipChannel	6
+../Src/DIO_Prg.c:30:6:Dio_VidInit	12
+../Src/DIO_Prg.c:67:13:Dio_EnumSetterPin	2
+../Src/DIO_Prg.c:81:13:Dio_EnumGetterPin	3
+../Src/DIO_Prg.c:97:6:Dio_VidRunnable	12
+../Src/DIO_Prg.c:150:15:Dio_ReadChannel	1
+../Src/DIO_Prg.c:161:6:Dio_WriteChannel	3
+../Src/DIO_Prg.c:180:6:Dio_GetVersionInfo	1

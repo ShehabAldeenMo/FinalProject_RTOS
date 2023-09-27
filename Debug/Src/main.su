@@ -4,7 +4,5 @@
 ../Src/main.c:157:6:Led_Update	24	static
 ../Src/main.c:207:6:LCD_Update	16	static
 ../Src/main.c:225:6:LedShape1	16	static
-../Src/main.c:241:6:LedShape2	16	static
-../Src/main.c:257:6:LedShape3	16	static
-../Src/main.c:274:6:LedShape4	16	static
-../Src/main.c:292:6:TTL_ReciveString	16	static
+../Src/main.c:243:6:LedShape2	16	static
+../Src/main.c:298:6:TTL_ReciveString	16	static

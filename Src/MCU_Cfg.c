@@ -14,7 +14,7 @@
 *   AUTOSAR Revision : ASR_REL_4_1_REV_0001
 *   SW Version       : 1.0.0
 ============================================================================*/
-#include "MCU_Interface.h"
+#include <Mcu_Interface.h>
 
 
 Mcu_ConfigType Config_Clock = { HSE_CLOCK, PLL_NONE_0, PLL_NONE_ENTRY,

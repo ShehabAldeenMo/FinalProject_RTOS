@@ -1,19 +1,17 @@
-/**
-*@file       MCU_Interface.h
-*@version    1.1.0
-*@brief      AUTOSAR Base - MCAL General purpose input output.
+/*
+*@file       Mcu_Interface.h
+*@version    2.0.0
 *@details    It contains all prototypes of used functions and states
 *@author     Shehab aldeen mohammed abdalah
 */
 
 /*===========================================================================
-*   Project          : AUTOSAR  4.3.1 MCAL
+*   Layer            : MCAL
 *   Platform         : ARM
 *   Peripherial      : STM32F103C8T6
-*   AUTOSAR Version  : R20-11
-*   AUTOSAR Revision : ASR_REL_4_1_REV_0001
-*   SW Version       : 1.0.0
+*   SW Version       : 2.0.0
 ============================================================================*/
+
 #ifndef MCU_INTERFACE_H_
 #define MCU_INTERFACE_H_
 
@@ -22,50 +20,34 @@
 *****************************  Includes   ***********************************
 *****************************************************************************/
 #include <Det.h>
+#include <Mcu_Cfg.h>
 #include "Std_Types.h"
-#include "Bit_Math.h"
-#include "MCU_Cfg.h"
 
 
 /****************************************************************************
 ****************************  typedef   *************************************
 *****************************************************************************/
 
-/**
- * Cover_req_[SWS_Mcu_00250]
- * Cover_req_[SWS_Mcu_00230]
- * Cover_req_[SWS_Mcu_00231]
- */
-typedef uint8 Mcu_PllStatusType;
+typedef uint8  Mcu_PllStatusType ;
+typedef uint32 Mcu_ResetType     ;
+typedef uint32 Mcu_ClockType     ;  /* used any enum except bus peripherals  */
+typedef uint32 Mcu_ModeType      ;  /* used bus peripherals enum */
+
+
+
+/****************************************************************************
+****************************  Defines   *************************************
+*****************************************************************************/
 
 #define MCU_PLL_LOCKED                0x00
 #define MCU_PLL_UNLOCKED              0x01
 #define MCU_PLL_STATUS_UNDEFINED      0x02
 
+#define MCU_POWER_ON_RESET            0x00
+#define MCU_WATCHDOG_RESET            0x01
+#define MCU_SW_RESET                  0x02
+#define MCU_RESET_UNDEFINED       	  0x03
 
-/**
- * Cover_req_[SWS_Mcu_00252]
- * Cover_req_[SWS_Mcu_00234]
- * Cover_req_[SWS_Mcu_00134]
- */
-typedef uint32 Mcu_ResetType;
-
-#define MCU_POWER_ON_RESET          0x00
-#define MCU_WATCHDOG_RESET          0x01
-#define MCU_SW_RESET                0x02
-#define MCU_RESET_UNDEFINED         0x03
-
-
-/**
- * Cover_req_[SWS_Mcu_00251]
- */
-typedef  uint32 Mcu_ClockType   ;  /* used any enum except bus peripherals  */
-
-
-/**
- * Cover_req_[SWS_Mcu_00254]
- */
-typedef uint32 Mcu_ModeType ; /* used bus peripherals enum */
 
 
 
@@ -229,112 +211,23 @@ typedef struct {
 	uint8              HSITRIM        ;
 }Mcu_ConfigType;
 
+
+
+
 /****************************************************************************
 ********************* Function definitions **********************************
 *****************************************************************************/
-
-/**
- * Cover_req_[SWS_Mcu_00153]
- * Cover_req_[SWS_Mcu_00026]
- */
 
 /* Input       : void
  * Return      : void
  * Description : This service initializes the MCU driver
  * */
 void              Mcu_Init (void);
-
-#if McuInitClock  == TRUE
-/**
- * Cover_req_[SWS_Mcu_00137]
- * Cover_req_[SWS_Mcu_00155]
- * Cover_req_[SWS_Mcu_00138]
- * Cover_req_[SWS_Mcu_00139]
- */
-
-/* Input       : ClockSetting
- * Return      : Std_ReturnType - E_OK: Command has been accepted
- *                              - E_NOT_OK: Command has not been accepted
- *
- * Description : The function Mcu_InitClock shall initialize the PLL and other MCU specific
- *               clock options. The clock configuration parameters are provided via the configuration
- *               structure (as identify the pll multiplication or HSE speed or HSI speed)
- *
- *               The function Mcu_InitClock shall start the PLL lock procedure (if PLL shall be initialized)
- *               so you can,t change any configurations in clock
- *
- *               The MCU module’s environment shall only call the function Mcu_InitClock after the MCU
- *               module has been initialized using the function Mcu_Init
- * */
-Std_ReturnType    Mcu_InitClock (Mcu_ClockType ClockSetting)                          ;
-
-#endif
-
-#if McuNoPll  == TRUE
-/**
- * Cover_req_[SWS_Mcu_00156]
- * Cover_req_[SWS_Mcu_00140]
- * - The function Mcu_DistributePllClock shall activate the PLL clock to the MCU clock distribution.
- *
- * Cover_req_[SWS_Mcu_00141]
- * - The function Mcu_DistributePllClock shall remove the
- * current clock source (for example internal oscillator clock) from MCU clock  distribution
- * - The MCU module’s environment shall only call the function
- * Mcu_DistributePllClock after the status of the PLL has been detected as
- * locked by the function Mcu_GetPllStatus.
- *
- * Cover_req_[SWS_Mcu_00142]
- * - If the function Mcu_DistributePllClock is called before
- * PLL has locked, this function shall return E_NOT_OK immediately, without any further action
- *
- * Cover_req_[SWS_Mcu_00142]
- * The function Mcu_DistributePllClock shall return without affecting the MCU hardware if the PLL clock
- * has been automatically activated by the MCU hardware
- *
- */
-
-/* Input       : ClockSetting
- * Return      : Std_ReturnType - E_OK: Command has been accepted
- *                              - E_NOT_OK: Command has not been accepted
- *
- * Description : This service activates the PLL clock to the MCU clock distribution
- * */
-Std_ReturnType    Mcu_DistributePllClock (void)                                       ;
-
-
-
-/**
- * Cover_req_[SWS_Mcu_00157]
- * Cover_req_[SWS_Mcu_00008]
- * Cover_req_[SWS_Mcu_00132]
- * - The function Mcu_GetPllStatus shall return
- * MCU_PLL_STATUS_UNDEFINED if this function is called prior to calling of the function Mcu_Init
- */
-
-/* Input       : ClockSetting
- * Return      : Std_ReturnType - E_OK: Command has been accepted
- *                              - E_NOT_OK: Command has not been accepted
- *
- * Description : This service initializes the PLL and other MCU specific clock options
- * */
-Mcu_PllStatusType Mcu_GetPllStatus (void)                                             ;
-
-#endif
-
-/*
- * To Follow CCD rules in access resources.
- * */
 Error_State       Mcu_EnumSetPerAPB1(BUS_PERPHERIALS Mcu_Per )                        ;
 Error_State       Mcu_EnumSetPerAPB2(BUS_PERPHERIALS Mcu_Per )                        ;
 Error_State       Mcu_EnumSetPerAHB (BUS_PERPHERIALS Mcu_Per )                        ;
 void              Mcu_VidRunnable (void)                                              ;
 
-
-/**
- * Cover_req_[SWS_Mcu_00161]
- * Cover_req_[SWS_Mcu_00147]
- * Cover_req_[SWS_Mcu_00148]
- */
 
 /* Input       : Pointer to where to store the version information of this module.
  * Return      : None

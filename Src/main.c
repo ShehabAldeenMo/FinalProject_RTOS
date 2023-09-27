@@ -16,8 +16,8 @@
  ******************************************************************************
  */
 
+#include <Mcu_Interface.h>
 #include <stdint.h>
-#include "MCU_Interface.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "LCD_Interface.h"

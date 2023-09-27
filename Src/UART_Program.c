@@ -18,12 +18,12 @@
  *
  *
 */
+#include <Mcu_Interface.h>
 #include "UART_Interface.h"
 #include "UART_Private.h"
 #include "UART_Config.h"
 #include "Port_Interface.h"
 #include "DIO_Interface.h"
-#include "MCU_Interface.h"
 
 /*
 DIV BY 16

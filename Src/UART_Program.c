@@ -122,59 +122,46 @@ volatile USART_t *UART_PTR = NULL;
  * \enduml
  */
 
+extern USART_ConfigType arrOfUART[NUMBER_OF_USED_UARTS];
 
-void USART_VidInit(const USART_ConfigType *USART_CFG)
-{
-    if (USART_CFG == NULL){
-        return;
-    }
+void USART_VidInit() {
+	if (arrOfUART == NULL) {
+		return;
+	}
 
-	for (int i = 0; i < NUMBER_OF_USED_UARTS; i++)
-	    {
- if (USART_CFG->UART_Array[i].USARTEnableType == UE_DISEBLE)
-	continue;
+	for (int i = 0; i < NUMBER_OF_USED_UARTS; i++) {
+		if (arrOfUART->UART_Array[i].USARTEnableType == UE_DISEBLE)
+			continue;
 
-
- switch (USART_CFG->UART_Array[i].USARTid)
- {
- case UART1:
-			Mcu_EnumSetPerAPB2(APB2_PER_USART1);
-			Mcu_VidRunnable();
-
+		switch (arrOfUART->UART_Array[i].USARTid) {
+		case UART1:
 			Port_EnumSetterPin(Port_A9, PORT_PIN_OUT | A_PUSH_PULL);
 			Port_EnumSetterPin(Port_A10, PORT_PIN_IN | FLOATING_INPUT);
 			Port_VidRunnable();
 			UART_PTR = MUART1;
 			break;
- case UART2:
-		Mcu_EnumSetPerAPB1(APB1_PER_USART2);
-		Mcu_VidRunnable();
+		case UART2:
+			Port_EnumSetterPin(Port_A2, PORT_PIN_OUT | A_PUSH_PULL);
+			Port_EnumSetterPin(Port_A3, PORT_PIN_IN | FLOATING_INPUT);
+			Port_VidRunnable();
+			UART_PTR = MUART2;
+			break;
+		case UART3:
+			Port_EnumSetterPin(Port_B10, PORT_PIN_OUT | A_PUSH_PULL);
+			Port_EnumSetterPin(Port_B11, PORT_PIN_IN | FLOATING_INPUT);
+			Port_VidRunnable();
+			UART_PTR = MUART3;
+			break;
+		}
 
-		Port_EnumSetterPin(Port_A2, PORT_PIN_OUT | A_PUSH_PULL);
-		Port_EnumSetterPin(Port_A3, PORT_PIN_IN | FLOATING_INPUT);
-		Port_VidRunnable();
-		UART_PTR = MUART2;
-		break;
- case UART3:
-		Mcu_EnumSetPerAPB1(APB1_PER_USART3);
-		Mcu_VidRunnable();
-
-		Port_EnumSetterPin(Port_B10, PORT_PIN_OUT | A_PUSH_PULL);
-		Port_EnumSetterPin(Port_B11, PORT_PIN_IN | FLOATING_INPUT);
-		Port_VidRunnable();
-		UART_PTR = MUART3;
-		break;
-}
-
-
-UART_PTR->BR.R = USART_CFG->UART_Array[i].USARTBaud;
-UART_PTR->CR1.B.M= USART_CFG->UART_Array[i].USARTWordLength;
-UART_PTR->CR2.B.STOP = USART_CFG->UART_Array[i].USARTStopBits;
-UART_PTR->CR1.B.REnTE = USART_CFG->UART_Array[i].USARTMode;
-UART_PTR->CR1.B.PSnPCE = USART_CFG->UART_Array[i].USARTParitySelection;
-					/*Start the USART*/
+		UART_PTR->BR.R = arrOfUART->UART_Array[i].USARTBaud;
+		UART_PTR->CR1.B.M = arrOfUART->UART_Array[i].USARTWordLength;
+		UART_PTR->CR2.B.STOP = arrOfUART->UART_Array[i].USARTStopBits;
+		UART_PTR->CR1.B.REnTE = arrOfUART->UART_Array[i].USARTMode;
+		UART_PTR->CR1.B.PSnPCE = arrOfUART->UART_Array[i].USARTParitySelection;
+		/*Start the USART*/
 		UART_PTR->CR1.B.UE = UE_ENABLE;
-}
+	}
 }
 /***********************************[2]***********************************************
  * Service Name: USART_ReceiveByte
@@ -253,13 +240,11 @@ UART_PTR->CR1.B.PSnPCE = USART_CFG->UART_Array[i].USARTParitySelection;
  * end
  * \enduml
 */
-uint8 USART_ReceiveByte(USART_ID UART_ID)
-{
-    uint8 Copy_U8Data;
-    uint32 Copy_U32TimeOut=0;
+uint8 USART_ReceiveByte(USART_ID UART_ID) {
+	uint8 Copy_U8Data;
+	uint32 Copy_U32TimeOut = 0;
 	//UART_PTR->DR.R = 0;
-	switch(UART_ID)
-	{
+	switch (UART_ID) {
 	case UART1:
 		UART_PTR = MUART1;
 		break;
@@ -270,23 +255,19 @@ uint8 USART_ReceiveByte(USART_ID UART_ID)
 		UART_PTR = MUART3;
 		break;
 	}
-    while((UART_PTR->SR.B.RXNE == 0) && (Copy_U32TimeOut < THRESHOLD_VALUE))
-    {
-           Copy_U32TimeOut++;
-       }
+	while ((UART_PTR->SR.B.RXNE == 0) && (Copy_U32TimeOut < THRESHOLD_VALUE)) {
+		Copy_U32TimeOut++;
+	}
 
-       if(Copy_U32TimeOut == THRESHOLD_VALUE)
-       {
-           Copy_U8Data = 255;
-       }
-       else
-       {
-           Copy_U8Data = UART_PTR->DR.R;
-           Copy_U32TimeOut=0;
+	if (Copy_U32TimeOut == THRESHOLD_VALUE) {
+		Copy_U8Data = 255;
+	} else {
+		Copy_U8Data = UART_PTR->DR.R;
+		Copy_U32TimeOut = 0;
 
-       }
-       UART_PTR->SR.B.RXNE = 0;
-       return Copy_U8Data;
+	}
+	UART_PTR->SR.B.RXNE = 0;
+	return Copy_U8Data;
 }
 /***********************************[3]***********************************************
  * Service Name: USART_VidSendChar
@@ -390,24 +371,22 @@ uint8 USART_ReceiveByte(USART_ID UART_ID)
  * end
  * \enduml
  */
-void USART_VidSendChar(USART_ID UART_ID, uint8 Copy_U8Data)
-{
-	switch(UART_ID)
-		{
-		case UART1:
-			UART_PTR = MUART1;
-			break;
-		case UART2:
-			UART_PTR = MUART2;
-			break;
-		case UART3:
-			UART_PTR = MUART3;
-			break;
-		}
+void USART_VidSendChar(USART_ID UART_ID, uint8 Copy_U8Data) {
+	switch (UART_ID) {
+	case UART1:
+		UART_PTR = MUART1;
+		break;
+	case UART2:
+		UART_PTR = MUART2;
+		break;
+	case UART3:
+		UART_PTR = MUART3;
+		break;
+	}
 
 	UART_PTR->SR.B.TC = 0;
 	UART_PTR->DR.R = Copy_U8Data;
-    while (!UART_PTR->SR.B.TC);
+	while (!UART_PTR->SR.B.TC);
 }
 
  /***********************************[4]***********************************************
@@ -498,11 +477,10 @@ void USART_VidSendChar(USART_ID UART_ID, uint8 Copy_U8Data)
   * \enduml
   */
 
- void USART_TransmitString(USART_ID UART_ID,uint8 *string_Copy_U8Data)
- {
-     for (int i = 0 ; string_Copy_U8Data[i] != '\0' ; i++)
-     	USART_VidSendChar(UART_ID, string_Copy_U8Data[i]);
- }
+void USART_TransmitString(USART_ID UART_ID, uint8 *string_Copy_U8Data) {
+	for (int i = 0; string_Copy_U8Data[i] != '\0'; i++)
+		USART_VidSendChar(UART_ID, string_Copy_U8Data[i]);
+}
 
  /***********************************[5]***********************************************
   * Service Name: USART_ReceiveString
@@ -596,13 +574,11 @@ void USART_VidSendChar(USART_ID UART_ID, uint8 Copy_U8Data)
   * end
   * \enduml
   */
-
- uint8* USART_ReceiveString(USART_ID UART_ID)
- {
-	 uint8 Copy_U8Data;
-	 uint8 i= 0 ;
-     received_string[i] = '\0';
-     for (i = 0; (Copy_U8Data = USART_ReceiveByte(UART_ID)) != '\0'; i++)
-     received_string[i] = Copy_U8Data;
-     return (received_string) ;
- }
+uint8* USART_ReceiveString(USART_ID UART_ID) {
+	uint8 Copy_U8Data;
+	uint8 i = 0;
+	received_string[i] = '\0';
+	for (i = 0; (Copy_U8Data = USART_ReceiveByte(UART_ID)) != '\0'; i++)
+		received_string[i] = Copy_U8Data;
+	return (received_string);
+}

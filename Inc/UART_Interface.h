@@ -37,10 +37,7 @@ typedef struct
 	STOP USARTStopBits;
 	USART_MODE USARTMode;
 	PSnPCE USARTParitySelection;
-    //u8 USART_HWFlowControl;
-    //u8 UART_dma_mode;
     UE USARTEnableType;
-  //u8    USARTPEInterruptEnable;
 }USART_Configurations;
 
 
@@ -49,9 +46,8 @@ typedef struct
 	USART_Configurations UART_Array[NUMBER_OF_USED_UARTS];
 }USART_ConfigType;
 
-extern USART_ConfigType arrOfUART[NUMBER_OF_USED_UARTS];
 
-void USART_VidInit(const USART_ConfigType *USART_CFG);
+void USART_VidInit();
 
 void USART_TransmitString(USART_ID UART_ID, uint8 *string_Copy_U8Data);
 

@@ -1,6 +1,6 @@
 /*
 *@file       Mcu_Interface.h
-*@version    2.0.0
+*@version    2.1.0
 *@details    It contains all prototypes of used functions and states
 *@author     Shehab aldeen mohammed abdalah
 */
@@ -8,7 +8,7 @@
 /*===========================================================================
 *   Platform         : ARM
 *   Peripherial      : STM32F103C8T6
-*   SW Version       : 2.0.0
+*   SW Version       : 2.1.0
 ============================================================================*/
 
 #ifndef MCU_INTERFACE_H_
@@ -22,6 +22,10 @@
 #include <Mcu_Cfg.h>
 #include "Std_Types.h"
 
+#if MCU_DESIGN == MCU_FREERTOS
+#include "FreeRTOS.h"
+#include "semphr.h"
+#endif
 
 /****************************************************************************
 ****************************  typedef   *************************************
@@ -47,9 +51,8 @@ typedef uint32 Mcu_ModeType      ;  /* used bus peripherals enum */
 #define MCU_SW_RESET                  0x02
 #define MCU_RESET_UNDEFINED       	  0x03
 
-
-
-
+#define MCU_NOOS                      0x00 /* No Operating System */
+#define MCU_FREERTOS                  0x01 /* free RTOS */
 
 /****************************************************************************
 ****************************    Enums  **************************************

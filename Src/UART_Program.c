@@ -39,9 +39,7 @@ BOUD RATE 9600
 
 uint8 received_string[MAX_STRING_TO_BE_RECEIVED_USART1];
 
-#define NULL 0
-
-volatile USART_t *UART_PTR = NULL;
+volatile USART_t *UART_PTR = NULL ;
 
 
 /***********************************[1]***********************************************

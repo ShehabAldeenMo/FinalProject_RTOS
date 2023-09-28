@@ -57,7 +57,7 @@ void   Mcu_Init () {
 
 	/* to select HSE[16] */
 	uint32 Local_RCC_Value = ConfigPtr->CLOCK_SYS | ( ConfigPtr->HSITRIM << 3 ) ;
-	RCC->CR.Reg      = Local_RCC_Value ;
+	RCC->CR      = Local_RCC_Value ;
 
 	/* to check that the clock is stabled  :
 	 PLLRDY    or   HSERDY   or   HSIRDY
@@ -65,7 +65,7 @@ void   Mcu_Init () {
 	uint32 LOCAL_Clock_Flag = ( ConfigPtr->CLOCK_SYS << 1 ) ;  /*  to check on one in the bit of flag  */
 	uint16 LOCAL_Time_limit = TIMEOUT_ROOF ;
 
-	while ( (LOCAL_Clock_Flag & RCC->CR.Reg) && (0 == LOCAL_Time_limit))
+	while ( (LOCAL_Clock_Flag & RCC->CR) && (0 == LOCAL_Time_limit))
 	{
 		LOCAL_Time_limit--;
 	}
@@ -76,15 +76,15 @@ void   Mcu_Init () {
 
 	/* to turn off VCC in PIN out that used in HSE to get clock */
 #if   HSE == HSE_CRSTYAL
-	RCC->CR.B.HSEBYP = 0 ;
+	RCC->CR = RCC->CR & ~(1<<(HSE_BYP));
 #elif HSE == HSE_RC
-	RCC->CR.B.HSEBYP = 1 ;
+	RCC->CR = RCC->CR | 1<<(HSE_BYP);
 #endif
 
 #if CSS_CFG == CSS_OFF
-	RCC->CR.B.CSSON = 0 ;
+	RCC->CR = RCC->CR & ~(1<<(CSSON));
 #elif CSS_CFG == CSS_ON
-	RCC->CR.B.CSSON = 1 ;
+	RCC->CR = RCC->CR | 1<<(CSSON);
 #endif
 
 	/* to select SW[1:0]
@@ -96,7 +96,7 @@ void   Mcu_Init () {
 			| ConfigPtr->PLL_ENTRY_CLOCK | ConfigPtr->ADC_PRESCALAR_
 			| ConfigPtr->APB2_PRESCALAR_ | ConfigPtr->APB1_PRESCALAR_
 			| ConfigPtr->AHB_PRESCALAR_ | ConfigPtr->SW_ENABLE_CLOCK;
-	RCC->CFGR.Reg    = Local_RCC_CFGR ;
+	RCC->CFGR    = Local_RCC_CFGR ;
 
 #if MCU_DESIGN == MCU_FREERTOS
 	xSemaphoreGive(MCU_SemConfig_Clock);
@@ -123,7 +123,6 @@ Error_State       Mcu_EnumSetPerAPB2(BUS_PERPHERIALS Mcu_Per ) {
 #endif
 	if (Mcu_Per >= APB2_PER_AFIO  && Mcu_Per <= APB2_PER_TIM11){
 		PerpherialsAPB2 |= Mcu_Per ;
-		return E_OK;
 	}
 #if MCU_DESIGN == MCU_FREERTOS
 	xSemaphoreGive(MCU_SemPerpherialsAPB2);
@@ -162,15 +161,15 @@ void  Mcu_VidRunnable (void){
 void Mcu_SetMode (Mcu_ModeType McuMode){
 	McuMode |= McuMode;
 	if ( McuMode >= APB1_PER_TIM2  && McuMode <= APB1_PER_DAC ){
-		RCC->APB1ENR.Reg  = McuMode ;
+		RCC->APB1ENR  = McuMode ;
 	}
 	else if (McuMode >= APB2_PER_AFIO  && McuMode <= APB2_PER_TIM11){
 		McuMode = McuMode & ~(1<<(31));
-		RCC->APB2ENR.Reg  = McuMode ;
+		RCC->APB2ENR  = McuMode ;
 	}
 	else if (McuMode >= AHB_PER_DMA_1  && McuMode <= AHB_PER_SDIO){
 		McuMode = McuMode & ~(1<<(30));
-		RCC->AHBENR.Reg  = McuMode ;
+		RCC->AHBENR  = McuMode ;
 	}
 	else {
 		Det_ReportError(MODULE_ID, Mcu_SetMode_ID, MCU_E_PARAM_MODE);

@@ -246,7 +246,6 @@ typedef struct {
 /*    Supporting functions     */
 Dio_LevelType     Dio_ReadChannel (volatile GPIOX_REG *GPIOX,Dio_ChannelType ChannelId)                         ;
 void              Dio_WriteChannel(volatile GPIOX_REG *GPIOX,Dio_ChannelType ChannelId,Dio_LevelType Level)     ;
-Dio_LevelType     Dio_FlipChannel(Dio_ChannelType ChannelId)                          ;
 
 
 #endif /* DIO_PRIVATE_H_ */

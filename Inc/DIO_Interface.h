@@ -1,6 +1,6 @@
 /*
 *@file       DIO_Interface.h
-*@version    2.0.0
+*@version    2.1.0
 *@details    It contains all prototypes of used functions and states
 *@author     Shehab aldeen mohammed abdalah
 */
@@ -8,7 +8,7 @@
 /*===========================================================================
 *   Platform         : ARM
 *   Micro-Controller : STM32F103C8T6
-*   SW Version       : 2.0.0
+*   SW Version       : 2.1.0
 ============================================================================*/
 
 #ifndef DIO_INTERFACE_H_

@@ -1,6 +1,6 @@
 /*
 *@file       MCU_Cfg.h
-*@version    2.0.0
+*@version    2.1.0
 *@details    It has the specific configurations of Mcu driver.
 *@author     Shehab aldeen mohammed abdalah.
 */
@@ -8,7 +8,7 @@
 /*===========================================================================
 *   Platform         : ARM
 *   Peripherial      : STM32F103C8T6
-*   SW Version       : 1.0.0
+*   SW Version       : 2.1.0
 ============================================================================*/
 
 #ifndef MCU_CFG_H_

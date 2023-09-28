@@ -1,6 +1,6 @@
 /*
 *@file       MGPIO_Private.h
-*@version    1.0.0
+*@version    2.1.0
 *@details    It has the private data like address and bits
 *@author     Shehab aldeen mohammed abdalah
 */
@@ -8,7 +8,7 @@
 /*===========================================================================
 *   Platform         : ARM
 *   Peripherial      : STM32F103C8T6
-*   SW Version       : 1.0.0
+*   SW Version       : 2.1.0
 ============================================================================*/
 #ifndef DIO_PRIVATE_H_
 #define DIO_PRIVATE_H_

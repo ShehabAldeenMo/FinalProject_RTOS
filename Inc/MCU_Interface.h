@@ -22,6 +22,11 @@
 #include <Mcu_Cfg.h>
 #include "Std_Types.h"
 
+#if MCU_DESIGN == MCU_FREERTOS
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "semphr.h"
+#endif
 
 /****************************************************************************
 ****************************  typedef   *************************************
@@ -47,9 +52,8 @@ typedef uint32 Mcu_ModeType      ;  /* used bus peripherals enum */
 #define MCU_SW_RESET                  0x02
 #define MCU_RESET_UNDEFINED       	  0x03
 
-
-
-
+#define MCU_NOOS                      0x00 /* No Operating System */
+#define MCU_FREERTOS                  0x01 /* free RTOS */
 
 /****************************************************************************
 ****************************    Enums  **************************************

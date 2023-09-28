@@ -15,6 +15,7 @@
 #define MCU_CFG_H_
 
 #include "Std_Types.h"
+#include "MCU_Interface.h"
 
 #define McuInitClock             FALSE
 #define McuNoPll                 FALSE
@@ -22,5 +23,11 @@
 /* if you used HSE define it otherwise neglect it*/
 #define HSE             HSE_CRSTYAL
 #define CSS_CFG         CSS_OFF
+
+/* Design choose :
+ * "MCU_NOOS"               --> No operating system
+ * "MCU_FREERTOS"           --> Free RTOS
+ *  */
+#define MCU_DESIGN    MCU_FREERTOS
 
 #endif /* MCU_CFG_H_ */

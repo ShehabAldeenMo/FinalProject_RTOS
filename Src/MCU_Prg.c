@@ -63,11 +63,6 @@ void   Mcu_Init () {
 	 PLLRDY    or   HSERDY   or   HSIRDY
 	 */
 	uint32 LOCAL_Clock_Flag = ( ConfigPtr->CLOCK_SYS << 1 ) ;  /*  to check on one in the bit of flag  */
-
-#if MCU_DESIGN == MCU_FREERTOS
-	xSemaphoreGive(MCU_SemConfig_Clock);
-#endif
-
 	uint16 LOCAL_Time_limit = TIMEOUT_ROOF ;
 
 	while ( (LOCAL_Clock_Flag & RCC->CR.Reg) && (0 == LOCAL_Time_limit))
@@ -92,10 +87,6 @@ void   Mcu_Init () {
 	RCC->CR.B.CSSON = 1 ;
 #endif
 
-
-#if MCU_DESIGN == MCU_FREERTOS
-	xSemaphoreTake(MCU_SemConfig_Clock,portMAX_DELAY);
-#endif
 	/* to select SW[1:0]
 	 00: HSI selected as system clock
 	 01: HSE selected as system clock
@@ -125,6 +116,7 @@ Error_State       Mcu_EnumSetPerAPB1(BUS_PERPHERIALS Mcu_Per ) {
 #endif
 	return E_NOT_OK ;
 }
+
 Error_State       Mcu_EnumSetPerAPB2(BUS_PERPHERIALS Mcu_Per ) {
 #if MCU_DESIGN == MCU_FREERTOS
 	xSemaphoreTake(MCU_SemPerpherialsAPB2,portMAX_DELAY);

@@ -21,6 +21,12 @@
 #include "Std_Types.h"
 #include "Dio_Cfg.h"
 
+#if DIO_DESIGN == DIO_FREERTOS
+#include "FreeRTOS.h"
+#include "semphr.h"
+#endif
+
+
 /****************************************************************************
 ****************************  typedef   *************************************
 *****************************************************************************/
@@ -30,6 +36,8 @@ typedef uint8 Dio_PortLevelType;        /* Range:If the µC owns ports of differ
                                            (e.g. 4, 8,16...Bit) Dio_PortLevelType inherits the size
                                            of the largest port*/
 
+#define DIO_NOOS                      0x00 /* No Operating System */
+#define DIO_FREERTOS                  0x01 /* free RTOS */
 
 /****************************************************************************
 ****************************  Enumarution   *************************************

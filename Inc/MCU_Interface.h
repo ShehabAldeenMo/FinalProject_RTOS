@@ -24,7 +24,6 @@
 
 #if MCU_DESIGN == MCU_FREERTOS
 #include "FreeRTOS.h"
-#include "queue.h"
 #include "semphr.h"
 #endif
 

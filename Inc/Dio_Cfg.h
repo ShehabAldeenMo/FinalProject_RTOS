@@ -16,6 +16,15 @@
 #ifndef DIO_CFG_H_
 #define DIO_CFG_H_
 
+#include "DIO_Interface.h"
+
 #define NUM_OF_PORT     3
+
+
+/* Design choose :
+ * "DIO_NOOS"               --> No operating system
+ * "DIO_FREERTOS"           --> Free RTOS
+ *  */
+#define DIO_DESIGN    DIO_FREERTOS
 
 #endif /* DIO_CFG_H_ */

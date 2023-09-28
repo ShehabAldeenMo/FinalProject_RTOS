@@ -1,7 +1,0 @@
-../Src/DIO_Prg.c:37:6:Dio_VidInit	16	static
-../Src/DIO_Prg.c:87:13:Dio_EnumSetterPin	16	static
-../Src/DIO_Prg.c:109:13:Dio_EnumGetterPin	16	static
-../Src/DIO_Prg.c:133:6:Dio_VidRunnable	24	static
-../Src/DIO_Prg.c:194:15:Dio_ReadChannel	24	static
-../Src/DIO_Prg.c:205:6:Dio_WriteChannel	24	static
-../Src/DIO_Prg.c:224:6:Dio_GetVersionInfo	16	static

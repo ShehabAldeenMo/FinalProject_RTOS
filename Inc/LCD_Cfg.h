@@ -1,17 +1,14 @@
 /*
- * LCD_Cfg.h
- *
- *  Created on: Aug 25, 2023
- *      Author: HP
- */
+*@file       Dio_Cfg.h
+*@version    2.1.0
+*@details    It has the cofigurations if driver
+*@author     Shehab aldeen mohammed abdalah
+*/
 
 #ifndef LCD_CFG_H_
 #define LCD_CFG_H_
 
 #include "LCD_Interface.h"
-
-/* define EIGHT_BIT or FOUR_BIT mode */
-#define EIGHT_BIT
 
 #define D0        Dio_A0
 #define D1        Dio_A1

@@ -8,11 +8,10 @@ Src/MCU_Prg.o: ../Src/MCU_Prg.c ../Inc/Mcu_Interface.h ../Inc/Det.h \
  D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/deprecated_definitions.h \
  D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/portable/GCC/ARM_CM3/portmacro.h \
  D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/mpu_wrappers.h \
+ D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/semphr.h \
  D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/queue.h \
  D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/task.h \
  D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/list.h \
- D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/semphr.h \
- D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/queue.h \
  ../Inc/Mcu_Private.h
 ../Inc/Mcu_Interface.h:
 ../Inc/Det.h:
@@ -27,9 +26,8 @@ D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Sourc
 D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/deprecated_definitions.h:
 D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/portable/GCC/ARM_CM3/portmacro.h:
 D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/mpu_wrappers.h:
+D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/semphr.h:
 D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/queue.h:
 D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/task.h:
 D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/list.h:
-D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/semphr.h:
-D:/Embedded\ Track/Embedded\ NGEN/03-STM\ Workspace/FinalProject_RTOS/RTOS/Source/include/queue.h:
 ../Inc/Mcu_Private.h:

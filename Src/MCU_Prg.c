@@ -109,11 +109,11 @@ Error_State       Mcu_EnumSetPerAPB1(BUS_PERPHERIALS Mcu_Per ) {
 #endif
 	if ( Mcu_Per >= APB1_PER_TIM2  && Mcu_Per <= APB1_PER_DAC ){
 		PerpherialsAPB1 |= Mcu_Per ;
-		return E_OK ;
-	}
 #if MCU_DESIGN == MCU_FREERTOS
 	xSemaphoreGive(MCU_SemPerpherialsAPB1);
 #endif
+	return E_OK;
+	}
 	return E_NOT_OK ;
 }
 
@@ -123,10 +123,11 @@ Error_State       Mcu_EnumSetPerAPB2(BUS_PERPHERIALS Mcu_Per ) {
 #endif
 	if (Mcu_Per >= APB2_PER_AFIO  && Mcu_Per <= APB2_PER_TIM11){
 		PerpherialsAPB2 |= Mcu_Per ;
-	}
 #if MCU_DESIGN == MCU_FREERTOS
 	xSemaphoreGive(MCU_SemPerpherialsAPB2);
 #endif
+	return E_OK;
+	}
 	return E_NOT_OK ;
 }
 
@@ -136,11 +137,11 @@ Error_State       Mcu_EnumSetPerAHB (BUS_PERPHERIALS Mcu_Per ){
 #endif
 	if (Mcu_Per >= AHB_PER_DMA_1  && Mcu_Per <= AHB_PER_SDIO){
 		PerpherialsAHB  |= Mcu_Per ;
-		return E_OK;
-	}
 #if MCU_DESIGN == MCU_FREERTOS
 	xSemaphoreGive(MCU_SemPerpherialsAHB);
 #endif
+	return E_OK;
+	}
 	return E_NOT_OK ;
 }
 

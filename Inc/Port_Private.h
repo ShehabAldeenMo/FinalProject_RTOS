@@ -52,20 +52,20 @@
 typedef struct {
 
 	union {
-		volatile volatile uint32 Reg;
+		volatile uint32 Reg;
 		struct {
-			volatile volatile uint32 MODE0 :2;
-			volatile volatile uint32 CNF0 :2;
-			volatile volatile uint32 MODE1 :2;
-			volatile volatile uint32 CNF1 :2;
-			volatile volatile uint32 MODE2 :2;
-			volatile volatile uint32 CNF2 :2;
-			volatile volatile uint32 MODE3 :2;
-			volatile volatile uint32 CNF3 :2;
-			volatile volatile uint32 MODE4 :2;
-			volatile volatile uint32 CNF4 :2;
-			volatile volatile uint32 MODE5 :2;
-			volatile volatile uint32 CNF5 :2;
+			volatile uint32 MODE0 :2;
+			volatile uint32 CNF0 :2;
+			volatile uint32 MODE1 :2;
+			volatile uint32 CNF1 :2;
+			volatile uint32 MODE2 :2;
+			volatile uint32 CNF2 :2;
+			volatile uint32 MODE3 :2;
+			volatile uint32 CNF3 :2;
+			volatile uint32 MODE4 :2;
+			volatile uint32 CNF4 :2;
+			volatile uint32 MODE5 :2;
+			volatile uint32 CNF5 :2;
 			volatile uint32 MODE6 :2;
 			volatile uint32 CNF6 :2;
 			volatile uint32 MODE7 :2;

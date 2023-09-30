@@ -25,10 +25,6 @@
 #include "UART_Private.h"
 #include "UART_Config.h"
 
-
-
-
-
 typedef struct
 {
 	USART_ID USARTid;
@@ -40,12 +36,10 @@ typedef struct
     UE USARTEnableType;
 }USART_Configurations;
 
-
 typedef struct
 {
 	USART_Configurations UART_Array[NUMBER_OF_USED_UARTS];
 }USART_ConfigType;
-
 
 void USART_VidInit();
 

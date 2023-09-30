@@ -145,8 +145,8 @@ void USART_VidInit() {
 			UART_PTR = MUART2;
 			break;
 		case UART3:
-			Port_EnumSetterPin(Port_B10, PORT_PIN_OUT | A_PUSH_PULL);
-			Port_EnumSetterPin(Port_B11, PORT_PIN_IN | FLOATING_INPUT);
+			Port_EnumSetterPin(Port_B10, OUTPUT_2 | A_PUSH_PULL);
+			Port_EnumSetterPin(Port_B11, INPUT | FLOATING_INPUT);
 			Port_VidRunnable();
 			UART_PTR = MUART3;
 			break;

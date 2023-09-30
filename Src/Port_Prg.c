@@ -89,8 +89,9 @@ void Port_VidInit (void){
 			GPIOC->CRH.Reg = (0x00000000);
 
 			/* to set mode of pins of port C */
-			GPIOC->CRH.Reg |= ( Port_ArrOfPorts[Port_GPIO_C].Mode <<(Port_C13  * BASE_CRL_CRH) ) ;
-			GPIOC->CRH.Reg |= ( Port_ArrOfPorts[Port_GPIO_C].Mode <<(Port_C14  * BASE_CRL_CRH) ) ;
+			GPIOC->CRH.Reg |= ( Port_ArrOfPorts[Port_GPIO_C].Mode <<(5  * BASE_CRL_CRH) ) ;
+			GPIOC->CRH.Reg |= ( Port_ArrOfPorts[Port_GPIO_C].Mode <<(6  * BASE_CRL_CRH) ) ;
+			break ;
 		}
 	}
 #if PORT_DESIGN == PORT_FREERTOS
@@ -101,23 +102,25 @@ void Port_VidInit (void){
 
 Error_State       Port_EnumSetterPin(Port_PinType Copy_ChannelId ,Port_PinModeType Copy_Mode){
 	if ( Copy_ChannelId >=Port_A0 && Copy_ChannelId <=Port_C14){
+
 #if PORT_DESIGN == PORT_FREERTOS
 	xSemaphoreTake(PORT_SemArryOfPins,portMAX_DELAY);
 	xSemaphoreTake(PORT_SemArryOfActivition,portMAX_DELAY);
 #endif
 		Port_ArryOfPins[Copy_ChannelId]       = Copy_Mode      ;
 		Port_ArryOfActivition[Copy_ChannelId] = STD_ON         ;
-		return E_OK ;
-	}
 #if PORT_DESIGN == PORT_FREERTOS
 	xSemaphoreGive(PORT_SemArryOfPins);
 	xSemaphoreGive(PORT_SemArryOfActivition);
 #endif
+		return E_OK ;
+	}
 	return E_INVALID_PARAMETER ;
 }
 
 void  Port_VidRunnable (void) {
 	uint8 i = 0 ;
+
 #if PORT_DESIGN == PORT_FREERTOS
 	xSemaphoreTake(PORT_SemArryOfPins,portMAX_DELAY);
 	xSemaphoreTake(PORT_SemArryOfActivition,portMAX_DELAY);
@@ -143,10 +146,12 @@ void  Port_VidRunnable (void) {
 	if (Port_ArryOfActivition[Port_C14] != STD_OFF){
 		Port_SetPinMode(GPIOC,(Port_C14 & ~(0x10)), Port_ArryOfPins[Port_C13]);
 	}
+
 #if PORT_DESIGN == PORT_FREERTOS
 	xSemaphoreGive(PORT_SemArryOfPins);
 	xSemaphoreGive(PORT_SemArryOfActivition);
 #endif
+
 }
 
 /*
@@ -174,8 +179,10 @@ void  Port_VidRunnable (void) {
 =============================================== */
 void    Port_SetPinMode      (GPIOX_REG *GPIOX,Port_PinType Pin,Port_PinModeType Mode){
 	if (Pin <= LOW_PIN) {
+		GPIOX->CRL.Reg  &= ~( 0xf << (Pin * BASE_CRL_CRH)) ;
 		GPIOX->CRL.Reg |= (Mode << (Pin * BASE_CRL_CRH));
 	} else {
+		GPIOX->CRH.Reg  &= ~( 0xf << ( (Pin-8) * BASE_CRL_CRH)) ;
 		GPIOX->CRH.Reg |= (Mode << ((Pin - 8) * BASE_CRL_CRH));
 	}
 }

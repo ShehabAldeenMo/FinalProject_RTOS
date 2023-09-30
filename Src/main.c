@@ -17,28 +17,27 @@
 
 /* Tasks */
 void Init_Task   (void *pvParameter);
-void RunnableTask(void *pvParameter);
 void ManagerTask (void *pvParameter);
 void ActionTask  (void *pvParameter);
-void Led_Update  (void *pvParameter);
-void LCD_Update  (void *pvParameter);
+void LedUpdate  (void *pvParameter);
+void LcdUpdate  (void *pvParameter);
 
 /* Tasks handlers */
 TaskHandle_t Init_Task_Handler   ;
-TaskHandle_t RunnableTask_Handler;
-TaskHandle_t TaskManager_Handler ;
+TaskHandle_t ManagerTask_Handler ;
 TaskHandle_t ActionTask_Handler  ;
-TaskHandle_t Led_Update_Handler  ;
-TaskHandle_t LCD_Update_Handler  ;
+TaskHandle_t LedUpdate_Handler  ;
+TaskHandle_t LcdUpdate_Handler  ;
 
 /* global Queue */
 QueueHandle_t GLobalQueue ;
 
 /* Functions */
-void LedShape1()       ;
-void LedShape2()       ;
-void LedShape3()       ;
-void LedShape4()       ;
+void LedShape1();
+void LedShape2();
+void LedShape3();
+void LedShape4();
+void Runnable(const uint8 value);
 void TTL_ReciveString();
 
 int main(void)
@@ -48,20 +47,17 @@ int main(void)
 	BaseType_t ret3;
 	BaseType_t ret4;
 	BaseType_t ret5;
-	BaseType_t ret6;
 
-	ret1 = xTaskCreate(Init_Task, "Init_Task", (configSTACK_DEPTH_TYPE) 50,
-			"Init_Task", (UBaseType_t) 5, &Init_Task_Handler);
-	ret2 = xTaskCreate(ActionTask, "ActionTask", (configSTACK_DEPTH_TYPE) 50,
-			"ActionTask", (UBaseType_t) 2, &ActionTask_Handler);
-	ret3 = xTaskCreate(ManagerTask, "ManagerTask", (configSTACK_DEPTH_TYPE) 50,
-			"ManagerTask", (UBaseType_t) 3, &TaskManager_Handler);
-	ret4 = xTaskCreate(Led_Update, "Led_Update", (configSTACK_DEPTH_TYPE) 50,
-			"ActionTask", (UBaseType_t) 1, &Led_Update_Handler);
-	ret5 = xTaskCreate(LCD_Update, "LCD_Update", (configSTACK_DEPTH_TYPE) 50,
-			"ManagerTask", (UBaseType_t) 1, &LCD_Update_Handler);
-	ret6 = xTaskCreate(RunnableTask, "unnableTask", (configSTACK_DEPTH_TYPE) 50,
-			"unnableTask", (UBaseType_t) 4, &RunnableTask_Handler);
+	ret1 = xTaskCreate(Init_Task, "Init_Task", (configSTACK_DEPTH_TYPE) 200,
+			"Init_Task", (UBaseType_t) 3, &Init_Task_Handler);
+	ret2 = xTaskCreate(ManagerTask, "ManagerTask", (configSTACK_DEPTH_TYPE) 200,
+			"ManagerTask", (UBaseType_t) 2, &ManagerTask_Handler);
+	ret3 = xTaskCreate(ActionTask,"ActionTask", (configSTACK_DEPTH_TYPE) 200,
+			"ActionTask", (UBaseType_t) 1, &ActionTask_Handler);
+	ret4 = xTaskCreate(LedUpdate,"Led_Update", (configSTACK_DEPTH_TYPE) 100,
+			"Led_Update", (UBaseType_t) 0, &LedUpdate_Handler);
+	ret5 = xTaskCreate(LcdUpdate, "LCD_Update", (configSTACK_DEPTH_TYPE) 200,
+			"LCD_Update", (UBaseType_t) 0, &LcdUpdate_Handler);
 
 	GLobalQueue = xQueueCreate( (UBaseType_t) 3, (UBaseType_t) sizeof(uint8) );
 
@@ -70,7 +66,6 @@ int main(void)
 	configASSERT(ret3 == pdPASS);
 	configASSERT(ret4 == pdPASS);
 	configASSERT(ret5 == pdPASS);
-	configASSERT(ret6 == pdPASS);
 
 	vTaskStartScheduler();
     /* Loop forever */
@@ -79,43 +74,47 @@ int main(void)
 }
 
 void Init_Task(void *pvParameter) {
-	Mcu_Init();
-	Mcu_EnumSetPerAPB2(APB2_PER_GPIOA);
-	Mcu_EnumSetPerAPB2(APB2_PER_GPIOB);
-	Mcu_EnumSetPerAPB2(APB2_PER_USART1);
+    // Perform MCU and peripheral initialization
+    Mcu_Init();
+    Mcu_EnumSetPerAPB2(APB2_PER_GPIOA);
+    Mcu_EnumSetPerAPB2(APB2_PER_GPIOB);
+    Mcu_EnumSetPerAPB1(APB1_PER_USART3);
+	Runnable(0x00);
+
+    // Perform other initializations
 	Port_VidInit();
-	Dio_VidInit();
-	USART_VidInit();
-	LCD_VidInit();
-	xTaskNotify( RunnableTask_Handler , (uint32) 3 , eSetValueWithOverwrite );
-	vTaskDelete(NULL_PTR);
+    Dio_VidInit();
+    USART_VidInit();
+    LCD_VidInit();
+
+	/* Intilaize four leds */
+	Port_EnumSetterPin(Port_A9, PORT_PIN_OUT|G_PUSH_PULL);
+	Port_EnumSetterPin(Port_A10, PORT_PIN_OUT|G_PUSH_PULL);
+	Port_EnumSetterPin(Port_A11, PORT_PIN_OUT|G_PUSH_PULL);
+	Port_EnumSetterPin(Port_A12, PORT_PIN_OUT|G_PUSH_PULL);
+	Runnable(0x01);
+
+    // Delete the Init_Task, as its job is done
+    vTaskDelete(NULL_PTR);
 }
 
-void RunnableTask(void *pvParameter) {
-	uint32_t ulNotificationValue;
-	for (;;) {
-		// Wait for a notification
-		ulNotificationValue = ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-		switch (ulNotificationValue) {
-		case 0:
-			Mcu_VidRunnable();
-			break;
-		case 1:
-			Port_VidRunnable();
-			break;
-		case 2:
-			Dio_VidRunnable();
-			break;
-		case 3:
-			Mcu_VidRunnable();
-			Port_VidRunnable();
-			Dio_VidRunnable();
-			break;
-		}
-		/* to out from scheduling */
-		vTaskSuspend(NULL);
+void Runnable(const uint8 value){
+	switch (value) {
+	case 0x00:
+		Mcu_VidRunnable();
+		break;
+	case 0x01:
+		Port_VidRunnable();
+		break;
+	case 0x02:
+		Dio_VidRunnable();
+		break;
+	case 0x03:
+		Mcu_VidRunnable();
+		Port_VidRunnable();
+		Dio_VidRunnable();
+		break;
 	}
-	vTaskDelete(NULL_PTR);
 }
 
 void ManagerTask(void *pvParameter ){
@@ -126,7 +125,7 @@ void ManagerTask(void *pvParameter ){
 		RecivedMassage = 0 ;
 
 		/* To show the first statement */
-		USART_TransmitString(UART3,"   Choose option 1-Led update 2-LCD update    ");
+		USART_TransmitString(UART3,"   Choose option 1-Led update 2-LCD update:");
 
 		/*  to check on option */
 		while( RecivedMassage != '1' && RecivedMassage != '2' ){
@@ -138,7 +137,7 @@ void ManagerTask(void *pvParameter ){
 		xTaskNotify( ActionTask_Handler , (uint32) 0 , eIncrement );
 
         /* to out from scheduling */
-		vTaskSuspend(NULL);
+		vTaskSuspend(NULL_PTR);
 	}
 	vTaskDelete(NULL_PTR);
 }
@@ -159,31 +158,24 @@ void ActionTask(void *pvParameter ){
 		USART_TransmitString(UART3,&RecivedMassage);
 
 		/* to notify other tasks */
-		switch (RecivedMassage) {
-		case '1':
-			xTaskNotify(Led_Update_Handler, (uint32 ) 0, eIncrement);
-			break;
-		case '2':
-			xTaskNotify(LCD_Update_Handler, (uint32 ) 0, eIncrement);
-			break;
-		}
+        switch ( RecivedMassage){
+
+        case '1' :
+    		xTaskNotify( LedUpdate_Handler , (uint32) 0, eIncrement );
+        	break ;
+        case '2' :
+    		xTaskNotify( LcdUpdate_Handler , (uint32) 0, eIncrement );
+        	break ;
+                }
         /* to out from scheduling */
 		vTaskSuspend(NULL);
+
 	}
 	vTaskDelete(NULL_PTR);
 }
 
-void Led_Update(void *pvParameter ){
+void LedUpdate(void *pvParameter ){
 	uint8 RecivedMassage ;
-
-	/* Intilaize four leds */
-	Port_EnumSetterPin(Port_A9, PORT_PIN_OUT|G_PUSH_PULL);
-	Port_EnumSetterPin(Port_A10, PORT_PIN_OUT|G_PUSH_PULL);
-	Port_EnumSetterPin(Port_A11, PORT_PIN_OUT|G_PUSH_PULL);
-	Port_EnumSetterPin(Port_A12, PORT_PIN_OUT|G_PUSH_PULL);
-	vTaskResume(RunnableTask_Handler);
-	xTaskNotify( RunnableTask_Handler , (uint32) 1 , eSetValueWithOverwrite );
-
 	for(;;){
 		/* to clear recive massege with each iteration */
 		RecivedMassage = 0 ;
@@ -221,124 +213,90 @@ void Led_Update(void *pvParameter ){
 	vTaskDelete(NULL_PTR);
 }
 
-void LCD_Update(void *pvParameter ){
+void LcdUpdate(void *pvParameter ){
 	for(;;){
         // Wait for a notification
 		ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
 		TTL_ReciveString();
 
-		vTaskResume(TaskManager_Handler);
+		vTaskResume(ManagerTask_Handler);
 		vTaskResume(ActionTask_Handler);
-		vTaskSuspend(NULL_PTR);
 	}
-
 	vTaskDelete(NULL_PTR);
 }
 
 void LedShape1(){
 	for (uint8 i = 0 ; i < 10 ; i++){
-		Dio_EnumSetterPin(Dio_A9, STD_HIGH);
-		Dio_EnumSetterPin(Dio_A10, STD_LOW);
-		Dio_EnumSetterPin(Dio_A11, STD_LOW);
-		Dio_EnumSetterPin(Dio_A12, STD_HIGH);
-		vTaskResume(RunnableTask_Handler);
-		xTaskNotify( RunnableTask_Handler , (uint32) 2 , eSetValueWithOverwrite );
+		Dio_EnumSetterPin(Dio_A9, STD_ON);
+		Dio_EnumSetterPin(Dio_A10, STD_OFF);
+		Dio_EnumSetterPin(Dio_A11, STD_OFF);
+		Dio_EnumSetterPin(Dio_A12, STD_ON);
+		Runnable(0x02);
 		vTaskDelay(pdMS_TO_TICKS(250));
-
-		Dio_EnumSetterPin(Dio_A9, STD_LOW);
-		Dio_EnumSetterPin(Dio_A10, STD_HIGH);
-		Dio_EnumSetterPin(Dio_A11, STD_HIGH);
-		Dio_EnumSetterPin(Dio_A12, STD_LOW);
-		vTaskResume(RunnableTask_Handler);
-		xTaskNotify( RunnableTask_Handler , (uint32) 2 , eSetValueWithOverwrite );
+		Dio_EnumSetterPin(Dio_A9, STD_OFF);
+		Dio_EnumSetterPin(Dio_A10, STD_ON);
+		Dio_EnumSetterPin(Dio_A11, STD_ON);
+		Dio_EnumSetterPin(Dio_A12, STD_OFF);
+		Runnable(0x02);
 		vTaskDelay(pdMS_TO_TICKS(250));
 	}
-	vTaskResume(TaskManager_Handler);
+	vTaskResume(ManagerTask_Handler);
 	vTaskResume(ActionTask_Handler);
 }
 void LedShape2(){
 	for (uint8 i = 0 ; i < 10 ; i++){
-		Dio_EnumSetterPin(Dio_A9, STD_HIGH);
-		Dio_EnumSetterPin(Dio_A10, STD_LOW);
-		Dio_EnumSetterPin(Dio_A11, STD_HIGH);
-		Dio_EnumSetterPin(Dio_A12, STD_LOW);
-		vTaskResume(RunnableTask_Handler);
-		xTaskNotify( RunnableTask_Handler , (uint32) 2 , eSetValueWithOverwrite );
+		Dio_EnumSetterPin(Dio_A9, STD_ON);
+		Dio_EnumSetterPin(Dio_A10, STD_OFF);
+		Dio_EnumSetterPin(Dio_A11, STD_ON);
+		Dio_EnumSetterPin(Dio_A12, STD_OFF);
+		Runnable(0x02);
 		vTaskDelay(pdMS_TO_TICKS(250));
-
-		Dio_EnumSetterPin(Dio_A9, STD_LOW);
-		Dio_EnumSetterPin(Dio_A10, STD_HIGH);
-		Dio_EnumSetterPin(Dio_A11, STD_LOW);
-		Dio_EnumSetterPin(Dio_A12, STD_HIGH);
-		vTaskResume(RunnableTask_Handler);
-		xTaskNotify( RunnableTask_Handler , (uint32) 2 , eSetValueWithOverwrite );
+		Dio_EnumSetterPin(Dio_A9, STD_OFF);
+		Dio_EnumSetterPin(Dio_A10, STD_ON);
+		Dio_EnumSetterPin(Dio_A11, STD_OFF);
+		Dio_EnumSetterPin(Dio_A12, STD_ON);
+		Runnable(0x02);
 		vTaskDelay(pdMS_TO_TICKS(250));
 	}
-	vTaskResume(TaskManager_Handler);
+	vTaskResume(ManagerTask_Handler);
 	vTaskResume(ActionTask_Handler);
 }
-
 void LedShape3(){
-	for (uint8 i = 0 ; i < 10 ; i++){
-		Dio_EnumSetterPin(Dio_A9, STD_HIGH);
-		Dio_EnumSetterPin(Dio_A10, STD_HIGH);
-		Dio_EnumSetterPin(Dio_A11, STD_LOW);
-		Dio_EnumSetterPin(Dio_A12, STD_LOW);
-		vTaskResume(RunnableTask_Handler);
-		xTaskNotify(RunnableTask_Handler, (uint32 ) 2, eSetValueWithOverwrite);
-		vTaskDelay(pdMS_TO_TICKS(250));
-
-		Dio_EnumSetterPin(Dio_A9, STD_LOW);
-		Dio_EnumSetterPin(Dio_A10, STD_LOW);
-		Dio_EnumSetterPin(Dio_A11, STD_HIGH);
-		Dio_EnumSetterPin(Dio_A12, STD_HIGH);
-		vTaskResume(RunnableTask_Handler);
-		xTaskNotify(RunnableTask_Handler, (uint32 ) 2, eSetValueWithOverwrite);
-		vTaskDelay(pdMS_TO_TICKS(250));
-	}
-	vTaskResume(TaskManager_Handler);
+	Dio_EnumSetterPin(Dio_A9, STD_ON);
+	Dio_EnumSetterPin(Dio_A10, STD_ON);
+	Dio_EnumSetterPin(Dio_A11, STD_OFF);
+	Dio_EnumSetterPin(Dio_A12, STD_OFF);
+	Runnable(0x02);
+	vTaskDelay(pdMS_TO_TICKS(2500));
+	vTaskResume(ManagerTask_Handler);
 	vTaskResume(ActionTask_Handler);
 }
-
 void LedShape4(){
-	for (uint8 i = 0 ; i < 10 ; i++){
-		Dio_WriteChannel(Dio_A9, STD_LOW);
-		Dio_WriteChannel(Dio_A10, STD_LOW);
-		Dio_WriteChannel(Dio_A11, STD_HIGH);
-		Dio_WriteChannel(Dio_A12, STD_HIGH);
-		vTaskResume(RunnableTask_Handler);
-		xTaskNotify(RunnableTask_Handler, (uint32 ) 2, eSetValueWithOverwrite);
-		vTaskDelay(pdMS_TO_TICKS(250));
-
-		Dio_WriteChannel(Dio_A9, STD_HIGH);
-		Dio_WriteChannel(Dio_A10, STD_HIGH);
-		Dio_WriteChannel(Dio_A11, STD_LOW);
-		Dio_WriteChannel(Dio_A12, STD_LOW);
-		vTaskResume(RunnableTask_Handler);
-		xTaskNotify(RunnableTask_Handler, (uint32 ) 2, eSetValueWithOverwrite);
-		vTaskDelay(pdMS_TO_TICKS(250));
-	}
-	vTaskResume(TaskManager_Handler);
+	Dio_EnumSetterPin(Dio_A9, STD_OFF);
+	Dio_EnumSetterPin(Dio_A10, STD_OFF);
+	Dio_EnumSetterPin(Dio_A11, STD_ON);
+	Dio_EnumSetterPin(Dio_A12, STD_ON);
+	Runnable(0x02);
+	vTaskDelay(pdMS_TO_TICKS(2500));
+	vTaskResume(ManagerTask_Handler);
 	vTaskResume(ActionTask_Handler);
 }
 
 void TTL_ReciveString(){
 	/* declare buffer */
 	uint8 RecivedMassage ;
+	LCD_VidClear();
 	USART_TransmitString(UART3,"     ");
 
 	/*  to recive string from putty using TTL module */
-	while ( RecivedMassage != '#') {
-
-		RecivedMassage = USART_ReceiveByte(UART3) ;
-
+	while (RecivedMassage != '#') {
+		RecivedMassage = USART_ReceiveByte(UART3);
 		if ((RecivedMassage >= 'A' && RecivedMassage <= 'Z')
-			|| (RecivedMassage >= 'a' && RecivedMassage <= 'z') ){
-
+				|| (RecivedMassage >= 'a' && RecivedMassage <= 'z')) {
 			/* to transmit data */
-			USART_TransmitString(UART3,&RecivedMassage);
+			USART_TransmitString(UART3, &RecivedMassage);
 			LCD_VidSendChar(RecivedMassage);
-		}//end if
-	}//end while
+		} //end if
+	} //end while
 }

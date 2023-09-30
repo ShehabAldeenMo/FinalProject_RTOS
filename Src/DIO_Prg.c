@@ -94,12 +94,12 @@ Error_State Dio_EnumSetterPin(Dio_ChannelType Copy_ChannelId,
 		ArryOfPins[Copy_ChannelId] = Copy_Level;
 		ArryOfActivition[Copy_ChannelId][0] = STD_ON;
 		ArryOfActivition[Copy_ChannelId][1] = DIO_OUT;
-		return E_OK;
-	}
 #if DIO_DESIGN == DIO_FREERTOS
 	xSemaphoreGive(DIO_SemArryOfPins);
 	xSemaphoreGive(DIO_SemArryOfActivition);
 #endif
+	return E_OK;
+	}
 	return E_INVALID_PARAMETER;
 }
 
@@ -120,12 +120,12 @@ Error_State Dio_EnumGetterPin(Dio_ChannelType Copy_ChannelId,
 		*Copy_Level = ArryOfPins[Copy_ChannelId];
 		ArryOfActivition[Copy_ChannelId][0] = STD_ON;
 		ArryOfActivition[Copy_ChannelId][1] = DIO_IN;
-		return E_OK;
-	}
 #if DIO_DESIGN == DIO_FREERTOS
 	xSemaphoreGive(DIO_SemArryOfPins);
 	xSemaphoreGive(DIO_SemArryOfActivition);
 #endif
+		return E_OK;
+	}
 	return E_INVALID_PARAMETER;
 }
 

@@ -117,6 +117,10 @@ void Runnable(const uint8 value){
 	}
 }
 
+void vApplicationIdleHook(void){
+	Runnable(0x03);
+}
+
 void ManagerTask(void *pvParameter ){
 	uint8 RecivedMassage ;
 

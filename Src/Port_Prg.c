@@ -1,18 +1,14 @@
 /**
 *@file       Port_Interface.h
-*@version    1.0.0
-*@brief      AUTOSAR Base - MCAL General purpose input output.
+*@version    2.1.0
 *@details    implementation of driver
 *@author     Shehab aldeen mohammed abdalah
 */
 
 /*===========================================================================
-*   Project          : AUTOSAR  4.3.1 MCAL
 *   Platform         : ARM
 *   Peripherial      : STM32F103C8T6
-*   AUTOSAR Version  : 4.3.1
-*   AUTOSAR Revision : ASR_REL_4_1_REV_0001
-*   SW Version       : 1.0.0
+*   SW Version       : 2.1.0
 ============================================================================*/
 
 /****************************************************************************
@@ -32,49 +28,13 @@ extern Port_Cfg Port_ArrOfPorts[NUM_OF_PORT] ;
 static Port_PinModeType  Port_ArryOfPins      [AMOUNT_PINS] ;
 static Port_PinModeType  Port_ArryOfActivition[AMOUNT_PINS] ;
 
-/* to Reset register */
-static uint8 FlagOfReset = 0 ;
+/* Create semphores to protect shared resources */
+#if PORT_DESIGN == PORT_FREERTOS
+SemaphoreHandle_t PORT_SemArrOfPorts       = NULL ;
+SemaphoreHandle_t PORT_SemArryOfPins       = NULL ;
+SemaphoreHandle_t PORT_SemArryOfActivition = NULL ;
+#endif
 
-/*
-  Input  : Port_PinType , Port_PinDirectionType
-  output : void
-  description :To select the type of pin input or output
-*/
-void    Port_SetPinDirection (Port_PinType Pin,Port_PinDirectionType Direction)  {
-	if ( Pin >= Port_A0  && Pin <= Port_A15 ){
-		if (Pin <= Port_A7){
-			GPIOA->CRL &= ~((0xF) << ( Pin * BASE_CRL_CRH));
-			GPIOA->CRL |= ( Direction <<(Pin  * BASE_CRL_CRH) ) ;
-		}
-		else {
-			GPIOA->CRH &= ~((0xF) << ( (Pin -8) * 4));
-			GPIOA->CRH |= ( Direction <<( (Pin -8)*BASE_CRL_CRH) ) ;
-		}
-	}
-	else if (Pin >= Port_B0  && Pin <= Port_B15){
-		/*  to clear the bit that we used in define port */
-		CLR_BIT(Pin,4);
-
-		if (Pin  <= Port_B7 ){
-			GPIOB->CRL &= ~((0xF) << ( Pin * BASE_CRL_CRH));
-			GPIOB->CRL |= ( Direction << (Pin *BASE_CRL_CRH) ) ;
-		}
-		else {
-			GPIOB->CRH &= ~((0xF) << ( (Pin -8) * 4));
-			GPIOB->CRH |= ( Direction <<( (Pin -8)*BASE_CRL_CRH) ) ;
-		}
-	}
-	else if (Pin >= Port_C13  && Pin <= Port_C15){
-		/*  to clear the bit that we used in define port */
-		CLR_BIT(Pin,5);
-
-		GPIOC->CRH &= ~((0xF) << ( (Pin -8) * 4));
-		GPIOC->CRH |= ( Direction <<( (Pin -8)*BASE_CRL_CRH) ) ;
-	}
-	else {
-		Det_ReportError(MODULE_ID, Port_SetPinDirection_ID, PORT_E_PARAM_PIN);
-	}
-}
 void    Port_GetVersionInfo  (Std_VersionInfoType* versioninfo){
 	versioninfo->moduleID         = MODULE_ID         ;
 	versioninfo->sw_major_version = PORT_MAJOR_VERSION ;
@@ -86,79 +46,112 @@ void    Port_GetVersionInfo  (Std_VersionInfoType* versioninfo){
 
 
 void Port_VidInit (void){
-	FlagOfReset++;
+	/* To protect shared resources by semphore
+	 * It's created taken
+	 **/
+#if PORT_DESIGN == PORT_FREERTOS
+	PORT_SemArrOfPorts = xSemaphoreCreateBinary();
+	PORT_SemArryOfPins = xSemaphoreCreateBinary();
+	xSemaphoreGive(PORT_SemArryOfPins);
+	PORT_SemArryOfActivition  = xSemaphoreCreateBinary();
+	xSemaphoreGive(PORT_SemArryOfActivition);
+#endif
 	for (uint8 i = 0 ; i < NUM_OF_PORT ; i++){
-
 		switch (Port_ArrOfPorts[i].Port_Num){
-
 		case Port_GPIO_A :
-
 			/* to Reset register */
-			GPIOA->CRL &= ~(0xFFFFFFFF);
-			GPIOA->CRH &= ~(0xFFFFFFFF);
+			GPIOA->CRL.Reg = 0x00000000 ;
+			GPIOA->CRH.Reg = 0x00000000 ;
 
 			/* to set mode of pins */
 			for (uint8 i = 0 ; i < 8 ; i++ ){
-				GPIOA->CRL |= ( Port_ArrOfPorts[Port_GPIO_A].Mode <<(i  * BASE_CRL_CRH) ) ;
+				GPIOA->CRL.Reg |= ( Port_ArrOfPorts[Port_GPIO_A].Mode <<(i  * BASE_CRL_CRH) ) ;
 			}
 			for (uint8 i = 0 ; i < 8 ; i++ ){
-				GPIOA->CRH |= ( Port_ArrOfPorts[Port_GPIO_A].Mode <<(i  * BASE_CRL_CRH) ) ;
+				GPIOA->CRH.Reg |= ( Port_ArrOfPorts[Port_GPIO_A].Mode <<(i  * BASE_CRL_CRH) ) ;
 			}
-
 			break ;
-
 		case Port_GPIO_B :
-
 			/* to Reset register */
-			GPIOB->CRL &= ~(0xFFFFFFFF);
-			GPIOB->CRH &= ~(0xFFFFFFFF);
-
+			GPIOB->CRL.Reg = (0x00000000);
+			GPIOB->CRH.Reg = (0x00000000);
 			/* to set mode of pins */
 			for (uint8 i = 0 ; i < 8 ; i++ ){
-				GPIOB->CRL |= ( Port_ArrOfPorts[Port_GPIO_B].Mode <<(i  * BASE_CRL_CRH) ) ;
+				GPIOB->CRL.Reg |= ( Port_ArrOfPorts[Port_GPIO_B].Mode <<(i  * BASE_CRL_CRH) ) ;
 			}
 			for (uint8 i = 0 ; i < 8 ; i++ ){
-				GPIOB->CRH |= ( Port_ArrOfPorts[Port_GPIO_B].Mode <<(i  * BASE_CRL_CRH) ) ;
+				GPIOB->CRH.Reg |= ( Port_ArrOfPorts[Port_GPIO_B].Mode <<(i  * BASE_CRL_CRH) ) ;
 			}
-
 			break ;
-
 		case Port_GPIO_C :
-
 			/* to Reset register */
-			GPIOC->CRL &= ~(0xFFFFFFFF);
-			GPIOC->CRH &= ~(0xFFFFFFFF);
+			GPIOC->CRL.Reg = (0x00000000);
+			GPIOC->CRH.Reg = (0x00000000);
 
-			/* to set mode of pins */
-			for (uint8 i = 0 ; i < 8 ; i++ ){
-				GPIOC->CRL |= ( Port_ArrOfPorts[Port_GPIO_C].Mode <<(i  * BASE_CRL_CRH) ) ;
-			}
-			for (uint8 i = 0 ; i < 8 ; i++ ){
-				GPIOC->CRH |= ( Port_ArrOfPorts[Port_GPIO_C].Mode <<(i  * BASE_CRL_CRH) ) ;
-			}
-
+			/* to set mode of pins of port C */
+			GPIOC->CRH.Reg |= ( Port_ArrOfPorts[Port_GPIO_C].Mode <<(5  * BASE_CRL_CRH) ) ;
+			GPIOC->CRH.Reg |= ( Port_ArrOfPorts[Port_GPIO_C].Mode <<(6  * BASE_CRL_CRH) ) ;
 			break ;
-
 		}
 	}
+#if PORT_DESIGN == PORT_FREERTOS
+	xSemaphoreGive(PORT_SemArrOfPorts);
+#endif
 }
+
+
 Error_State       Port_EnumSetterPin(Port_PinType Copy_ChannelId ,Port_PinModeType Copy_Mode){
-	if ( Copy_ChannelId >=Port_A0 && Copy_ChannelId <=Port_C15){
+	if ( Copy_ChannelId >=Port_A0 && Copy_ChannelId <=Port_C14){
+
+#if PORT_DESIGN == PORT_FREERTOS
+	xSemaphoreTake(PORT_SemArryOfPins,portMAX_DELAY);
+	xSemaphoreTake(PORT_SemArryOfActivition,portMAX_DELAY);
+#endif
 		Port_ArryOfPins[Copy_ChannelId]       = Copy_Mode      ;
 		Port_ArryOfActivition[Copy_ChannelId] = STD_ON         ;
+#if PORT_DESIGN == PORT_FREERTOS
+	xSemaphoreGive(PORT_SemArryOfPins);
+	xSemaphoreGive(PORT_SemArryOfActivition);
+#endif
 		return E_OK ;
 	}
 	return E_INVALID_PARAMETER ;
 }
 
-void              Port_VidRunnable (void) {
+void  Port_VidRunnable (void) {
 	uint8 i = 0 ;
-	while(  i < AMOUNT_PINS ){
+
+#if PORT_DESIGN == PORT_FREERTOS
+	xSemaphoreTake(PORT_SemArryOfPins,portMAX_DELAY);
+	xSemaphoreTake(PORT_SemArryOfActivition,portMAX_DELAY);
+#endif
+	while(  i <= Port_A15 ){
 		if (Port_ArryOfActivition[i] != STD_OFF){
-			Port_SetPinMode(i, Port_ArryOfPins[i]);
+			Port_SetPinMode(GPIOA,i, Port_ArryOfPins[i]);
 		}
 		i++;
 	}
+
+	while(  i <= Port_B15 ){
+		if (Port_ArryOfActivition[i] != STD_OFF){
+			Port_SetPinMode(GPIOB,(i & ~(0x10)), Port_ArryOfPins[i]);
+		}
+		i++;
+	}
+
+	if (Port_ArryOfActivition[Port_C13] != STD_OFF){
+		Port_SetPinMode(GPIOC,(Port_C13 & ~(0x10)), Port_ArryOfPins[Port_C13]);
+	}
+
+	if (Port_ArryOfActivition[Port_C14] != STD_OFF){
+		Port_SetPinMode(GPIOC,(Port_C14 & ~(0x10)), Port_ArryOfPins[Port_C13]);
+	}
+
+#if PORT_DESIGN == PORT_FREERTOS
+	xSemaphoreGive(PORT_SemArryOfPins);
+	xSemaphoreGive(PORT_SemArryOfActivition);
+#endif
+
 }
 
 /*
@@ -184,47 +177,12 @@ void              Port_VidRunnable (void) {
 	10: Output mode, max speed 2 MHz.
 	11: Output mode, max speed 50 MHz
 =============================================== */
-void    Port_SetPinMode      (Port_PinType Pin,Port_PinModeType Mode){
-
-	if (FlagOfReset == 0){
-		GPIOA->CRL &= ~(0xFFFFFFFF);
-		GPIOB->CRL &= ~(0xFFFFFFFF);
-		GPIOC->CRL &= ~(0xFFFFFFFF);
-		GPIOA->CRH &= ~(0xFFFFFFFF);
-		GPIOB->CRH &= ~(0xFFFFFFFF);
-		GPIOC->CRH &= ~(0xFFFFFFFF);
-		FlagOfReset++;
-	}
-
-	if ( Pin >= Port_A0  && Pin <= Port_A15 ){
-		if (Pin <= Port_A7){
-			GPIOA->CRL |= ( Mode <<(Pin  * BASE_CRL_CRH) ) ;
-		}
-		else {
-			GPIOA->CRH |= ( Mode <<( (Pin -8)*BASE_CRL_CRH) ) ;
-		}
-	}
-	else if (Pin >= Port_B0  && Pin <= Port_B15){
-
-		if (Pin  <= Port_B7 ){
-			/*  to clear the bit that we used in define port */
-			CLR_BIT(Pin,4);
-
-			GPIOB->CRL |= ( Mode << (Pin *BASE_CRL_CRH) ) ;
-		}
-		else {
-			/*  to clear the bit that we used in define port */
-			CLR_BIT(Pin,4);
-
-			GPIOB->CRH |= ( Mode <<( (Pin -8)*BASE_CRL_CRH) ) ;
-		}
-	}
-	else if (Pin >= Port_C0  && Pin <= Port_C15){
-		/*  to clear the bit that we used in define port */
-		CLR_BIT(Pin,5);
-		GPIOB->CRH |= ( Mode <<( (Pin -8)*BASE_CRL_CRH) ) ;
-	}
-	else {
-		Det_ReportError(MODULE_ID, Port_SetPinMode_ID, PORT_E_PARAM_PIN);
+void    Port_SetPinMode      (GPIOX_REG *GPIOX,Port_PinType Pin,Port_PinModeType Mode){
+	if (Pin <= LOW_PIN) {
+		GPIOX->CRL.Reg  &= ~( 0xf << (Pin * BASE_CRL_CRH)) ;
+		GPIOX->CRL.Reg |= (Mode << (Pin * BASE_CRL_CRH));
+	} else {
+		GPIOX->CRH.Reg  &= ~( 0xf << ( (Pin-8) * BASE_CRL_CRH)) ;
+		GPIOX->CRH.Reg |= (Mode << ((Pin - 8) * BASE_CRL_CRH));
 	}
 }

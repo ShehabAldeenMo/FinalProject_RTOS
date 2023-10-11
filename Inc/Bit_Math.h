@@ -1,5 +1,5 @@
 /**
-*@file       Bit_Math.h
+*@file       Std_Types.h
 *@version    1.0.0
 *@details    To make process on specific bits in registers or variables
 *@author     Shehab aldeen mohammed abdalah

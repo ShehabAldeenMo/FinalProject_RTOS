@@ -1,18 +1,14 @@
 /**
 *@file       Port_Interface.h
-*@version    1.0.0
-*@brief      AUTOSAR Base - MCAL General purpose input output.
+*@version    2.1.0
 *@details    It contains all prototypes of used functions and states in port driver
 *@author     Shehab aldeen mohammed abdalah
 */
 
 /*===========================================================================
-*   Project          : AUTOSAR  4.3.1 MCAL
 *   Platform         : ARM
 *   Peripherial      : STM32F103C8T6
-*   AUTOSAR Version  : 4.3.1
-*   AUTOSAR Revision : ASR_REL_4_1_REV_0001
-*   SW Version       : 1.0.0
+*   SW Version       : 2.1.0
 ============================================================================*/
 
 #ifndef PORT_INTERFACE_H_
@@ -25,16 +21,19 @@
 #include "Std_Types.h"
 #include "Bit_Math.h"
 
+#if PORT_DESIGN == PORT_FREERTOS
+#include "FreeRTOS.h"
+#include "semphr.h"
+#endif
+
+
+#define PORT_NOOS                      0x00 /* No Operating System */
+#define PORT_FREERTOS                  0x01 /* free RTOS */
+
 /****************************************************************************
 ****************************  typedef   *************************************
 *****************************************************************************/
 
-/**
- * Cover_req_[SWS_Port_00220]
- * Cover_req_[SWS_Port_00013]
- * Cover_req_[SWS_Port_00219]
- * Cover_req_[SWS_Port_00229]
- */
 /* we need to Port_PinType with port driver */
 typedef enum {
 	Port_A0   = 0x00 ,
@@ -50,7 +49,6 @@ typedef enum {
 	Port_A10  = 0x0A ,
 	Port_A11  = 0x0B ,
 	Port_A12  = 0x0C ,
-	Port_A14  = 0x0E ,
 	Port_A15  = 0x0F ,
 
 	Port_B0   = 0x10 ,
@@ -69,29 +67,10 @@ typedef enum {
 	Port_B14  = 0x1E ,
 	Port_B15  = 0x1F ,
 
-	Port_C0   = 0x20 ,
-	Port_C1   = 0x21 ,
-	Port_C3   = 0x23 ,
-	Port_C4   = 0x24 ,
-	Port_C5   = 0x25 ,
-	Port_C6   = 0x26 ,
-	Port_C7   = 0x27 ,
-	Port_C8   = 0x28 ,
-	Port_C9   = 0x29 ,
-	Port_C10  = 0x2A ,
-	Port_C11  = 0x2B ,
-	Port_C12  = 0x2C ,
 	Port_C13  = 0x2D ,
 	Port_C14  = 0x2E ,
-	Port_C15  = 0x2F
 }Port_PinType;
 
-
-/**
- * Cover_req_[SWS_Port_00231]
- * Cover_req_[SWS_Port_00231]
- * Cover_req_[SWS_Port_00212]
- */
 typedef enum {
 	INPUT            =     0x0 , /*00: Input mode*/
 	OUTPUT_10        =     0x1 , /*01 : Output mode, max speed 10 MHz. */
@@ -119,35 +98,16 @@ typedef enum {
 	Port_GPIO_C ,
 }Port_PortType;
 
-/**
- * Cover_req_[SWS_Port_00230]
- * Cover_req_[SWS_Port_00046]
- * Cover_req_[SWS_Port_00220]
- */
 typedef uint8 Port_PinDirectionType;     /* PORT_PIN_IN , PORT_PIN_OUT*/
-
-
-
 
 typedef struct {
 	Port_PortType               Port_Num       ;
 	Port_PinModeType            Mode           ;
 }Port_Cfg;
 
-
-
 /****************************************************************************
 ********************* Function definitions **********************************
 *****************************************************************************/
-
-/**
- * Cover_req_[SWS_Port_00141]
- * Cover_req_[SWS_Port_00141]
- * Cover_req_[SWS_Port_00141]
- * Cover_req_[SWS_Port_00141]
- * Cover_req_[SWS_Port_00141]
- * Cover_req_[SWS_Port_00141]
- */
 void              Port_VidInit     (void)                                                         ;
 Error_State       Port_EnumSetterPin(Port_PinType Copy_ChannelId ,Port_PinModeType Copy_Mode)     ;
 void              Port_VidRunnable (void)                                                         ;
@@ -158,9 +118,6 @@ void              Port_GetVersionInfo  (Std_VersionInfoType* versioninfo)       
 /****************************************************************************
 ***************************  defines  ***************************************
 *****************************************************************************/
-/**
- * Cover_req_[SWS_Port_00230]
- */
 #define PORT_PIN_IN                 0x00
 #define PORT_PIN_OUT                0x02
 

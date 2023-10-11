@@ -1,6 +1,6 @@
 /*
 *@file       MCU_Cfg.c
-*@version    1.0.0
+*@version    2.1.0
 *@details    It contains all prototypes of used functions and states
 *@author     Shehab aldeen mohammed abdalah
 */
@@ -8,7 +8,7 @@
 /*===========================================================================
 *   Platform         : ARM
 *   Peripherial      : STM32F103C8T6
-*   SW Version       : 2.0.0
+*   SW Version       : 2.1.0
 ============================================================================*/
 #include <Mcu_Interface.h>
 

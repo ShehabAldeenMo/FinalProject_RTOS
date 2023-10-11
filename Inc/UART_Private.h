@@ -22,17 +22,15 @@
  *
  *
 */
-#define NUMBER_OF_USED_UARTS 	3
-#define F_CPU              8000000
+#define NUMBER_OF_USED_UARTS 	         3
+#define F_CPU                            8000000
 #define MAX_STRING_TO_BE_RECEIVED_USART1 100
 #define MAX_STRING_TO_BE_RECEIVED_USART2 100
 #define MAX_STRING_TO_BE_RECEIVED_USART3 100
-#define THRESHOLD_VALUE 100000
+#define THRESHOLD_VALUE                  100000
 
 typedef struct
 {
-	
-	
 	union
 {
 	uint32 R;

@@ -1,6 +1,6 @@
 /*
 *@file       Dio_Prg.c
-*@version    1.0.0
+*@version    2.1.0
 *@details    It has the core code of driver
 *@author     Shehab aldeen mohammed abdalah
 */
@@ -8,7 +8,7 @@
 /*===========================================================================
 *   Platform         : ARM
 *   Peripherial      : STM32F103C8T6
-*   SW Version       : 1.0.0
+*   SW Version       : 2.1.0
 ============================================================================*/
 
 /****************************************************************************
@@ -26,8 +26,25 @@ extern Dio_Cfg ArrOfPorts[NUM_OF_PORT];
 static Dio_PortLevelType ArryOfPins[NUM_OF_PINS];
 static Dio_PortLevelType ArryOfActivition[NUM_OF_PINS][2];
 
+/* Create semphores to protect shared resources */
+#if DIO_DESIGN == DIO_FREERTOS
+SemaphoreHandle_t DIO_SemArrOfPorts       = NULL ;
+SemaphoreHandle_t DIO_SemArryOfPins       = NULL ;
+SemaphoreHandle_t DIO_SemArryOfActivition = NULL ;
+#endif
+
 /* to initialize all pins with the configured types that used in Cfg.c */
 void Dio_VidInit(void) {
+	/* To protect shared resources by semphore
+	 * It's created taken
+	 **/
+#if DIO_DESIGN == DIO_FREERTOS
+	DIO_SemArrOfPorts = xSemaphoreCreateBinary();
+	DIO_SemArryOfPins = xSemaphoreCreateBinary();
+	xSemaphoreGive(DIO_SemArryOfPins);
+	DIO_SemArryOfActivition  = xSemaphoreCreateBinary();
+	xSemaphoreGive(DIO_SemArryOfActivition);
+#endif
 	for (uint8 i = 0; i < NUM_OF_PORT; i++) {
 		switch (ArrOfPorts[i].Port_Num) {
 		case Dio_GPIO_A:
@@ -59,6 +76,9 @@ void Dio_VidInit(void) {
 			break;
 		}
 	}
+#if DIO_DESIGN == DIO_FREERTOS
+	xSemaphoreGive(DIO_SemArrOfPorts);
+#endif
 }
 
 /* if you want to set some thing in buffer call Dio_EnuSetterPin then Dio_VidRunnable will
@@ -66,11 +86,19 @@ void Dio_VidInit(void) {
  */
 Error_State Dio_EnumSetterPin(Dio_ChannelType Copy_ChannelId,
 		Dio_LevelType Copy_Level) {
+#if DIO_DESIGN == DIO_FREERTOS
+	xSemaphoreTake(DIO_SemArryOfPins,portMAX_DELAY);
+	xSemaphoreTake(DIO_SemArryOfActivition,portMAX_DELAY);
+#endif
 	if (Copy_ChannelId >= Dio_A0 && Copy_ChannelId <= Dio_C14) {
 		ArryOfPins[Copy_ChannelId] = Copy_Level;
 		ArryOfActivition[Copy_ChannelId][0] = STD_ON;
 		ArryOfActivition[Copy_ChannelId][1] = DIO_OUT;
-		return E_OK;
+#if DIO_DESIGN == DIO_FREERTOS
+	xSemaphoreGive(DIO_SemArryOfPins);
+	xSemaphoreGive(DIO_SemArryOfActivition);
+#endif
+	return E_OK;
 	}
 	return E_INVALID_PARAMETER;
 }
@@ -80,6 +108,10 @@ Error_State Dio_EnumSetterPin(Dio_ChannelType Copy_ChannelId,
  */
 Error_State Dio_EnumGetterPin(Dio_ChannelType Copy_ChannelId,
 		Dio_LevelType *Copy_Level) {
+#if DIO_DESIGN == DIO_FREERTOS
+	xSemaphoreTake(DIO_SemArryOfPins,portMAX_DELAY);
+	xSemaphoreTake(DIO_SemArryOfActivition,portMAX_DELAY);
+#endif
 	if (Copy_Level == NULL_PTR) {
 		return E_NOT_OK;
 	}
@@ -88,6 +120,10 @@ Error_State Dio_EnumGetterPin(Dio_ChannelType Copy_ChannelId,
 		*Copy_Level = ArryOfPins[Copy_ChannelId];
 		ArryOfActivition[Copy_ChannelId][0] = STD_ON;
 		ArryOfActivition[Copy_ChannelId][1] = DIO_IN;
+#if DIO_DESIGN == DIO_FREERTOS
+	xSemaphoreGive(DIO_SemArryOfPins);
+	xSemaphoreGive(DIO_SemArryOfActivition);
+#endif
 		return E_OK;
 	}
 	return E_INVALID_PARAMETER;
@@ -97,6 +133,10 @@ Error_State Dio_EnumGetterPin(Dio_ChannelType Copy_ChannelId,
 void Dio_VidRunnable(void) {
 	/* GPIOA */
 	uint8 i = Dio_A0;
+#if DIO_DESIGN == DIO_FREERTOS
+	xSemaphoreTake(DIO_SemArryOfPins,portMAX_DELAY);
+	xSemaphoreTake(DIO_SemArryOfActivition,portMAX_DELAY);
+#endif
 	while (i <= Dio_A12) {
 		if (ArryOfActivition[i][0] != STD_OFF) {
 			if (ArryOfActivition[i][1] == DIO_OUT) {
@@ -140,6 +180,10 @@ void Dio_VidRunnable(void) {
 		}
 		i++;
 	}
+#if DIO_DESIGN == DIO_FREERTOS
+	xSemaphoreGive(DIO_SemArryOfPins);
+	xSemaphoreGive(DIO_SemArryOfActivition);
+#endif
 }
 
 /*

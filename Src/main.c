@@ -309,7 +309,7 @@ void Init_Task(void *pvParameter) {
     Mcu_EnumSetPerAPB2(APB2_PER_GPIOA);
     Mcu_EnumSetPerAPB2(APB2_PER_GPIOB);
     Mcu_EnumSetPerAPB1(APB1_PER_USART3);
-	Runnable(MCU_RUNNABLE);
+  	Runnable(MCU_RUNNABLE);
 
     // Perform other initializations
 	Port_VidInit();
@@ -560,6 +560,7 @@ void vApplicationIdleHook(void){
  * @enduml
  *
 */
+
 void ManagerTask(void *pvParameter ){
 	uint8 RecivedMassage ;
 
@@ -584,7 +585,6 @@ void ManagerTask(void *pvParameter ){
 	}
 	vTaskDelete(NULL_PTR);
 }
-
 
 /**
  * \section Service_Name
@@ -701,9 +701,6 @@ void ActionTask(void *pvParameter ){
 	}
 	vTaskDelete(NULL_PTR);
 }
-
-
-
 
 /**
  * \section Service_Name
@@ -843,9 +840,6 @@ void LedUpdate(void *pvParameter ){
 	}
 	vTaskDelete(NULL_PTR);
 }
-
-
-
 
 /**
  * \section Service_Name
@@ -1196,8 +1190,6 @@ void LedShape2(){
 	vTaskResume(ActionTask_Handler);
 }
 
-
-
 /**
  * \section Service_Name
  * LedShape3Function
@@ -1376,7 +1368,6 @@ void LedShape4(){
 	vTaskResume(ManagerTask_Handler);
 	vTaskResume(ActionTask_Handler);
 }
-
 
 /**
  * \section Service_Name

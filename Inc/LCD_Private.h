@@ -1,23 +1,15 @@
 /*
- * LCD_Private.h
- *
- *  Created on: Aug 25, 2023
- *      Author: HP
- */
+*@file       LCD_Private.h
+*@version    2.1.0
+*@details    It has the private data like address and bits
+*@author     Shehab aldeen mohammed abdalah
+*/
 
 #ifndef LCD_PRIVATE_H_
 #define LCD_PRIVATE_H_
 
 /* LCD defines */
-/*** to enable 8-bit mode ***/
-#ifdef EIGHT_BIT
 #define FUNC_SET (0x003C)
-#endif
-
-/*** to enable 4-bit mode ***/
-#ifndef EIGHT_BIT
-#define FUNC_SET (0x002C)
-#endif
 
 #define DISPLAY_ON_CURSOR_ON_BLINKING     ((0x000F))
 #define DISPLAY_CLEAR                     ((0x0001))

@@ -1,6 +1,6 @@
 /*
  * File        : USART_program.c
- * Author      : Yassin - RABIE - ALIAA
+ * Author      : Shehab El-deen Mohammed & Ali Mamdouh
  * Date        : 25/08/2023
  * Version     : 5
 

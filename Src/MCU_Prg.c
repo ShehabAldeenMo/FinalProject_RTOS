@@ -654,17 +654,16 @@ void  Mcu_VidRunnable (void){
  *
  */
 void Mcu_SetMode (Mcu_ModeType McuMode){
-	McuMode |= McuMode;/////////////////////////////////////////////////////////////does this is important???
 	if ( McuMode >= APB1_PER_TIM2  && McuMode <= APB1_PER_DAC ){
-		RCC->APB1ENR  = McuMode ;
+		RCC->APB1ENR  |= McuMode ;
 	}
 	else if (McuMode >= APB2_PER_AFIO  && McuMode <= APB2_PER_TIM11){
 		McuMode = McuMode & ~(1<<(31));
-		RCC->APB2ENR  = McuMode ;
+		RCC->APB2ENR  |= McuMode ;
 	}
 	else if (McuMode >= AHB_PER_DMA_1  && McuMode <= AHB_PER_SDIO){
 		McuMode = McuMode & ~(1<<(30));
-		RCC->AHBENR  = McuMode ;
+		RCC->AHBENR  |= McuMode ;
 	}
 	else {
 		Det_ReportError(MODULE_ID, Mcu_SetMode_ID, MCU_E_PARAM_MODE);

@@ -2,7 +2,7 @@
  * UART_cfg.c
  *
  *  Created on: Aug 21, 2023
- *      Author: Ahmed
+ *      Author: Shehab El-deen Mohammed & Ali Mamdouh
  */
 /**
  * \file UART_CFG.c

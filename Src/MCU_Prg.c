@@ -2,7 +2,6 @@
 *@file       MCU_Prg.c
 *@version    2.1.0
 *@details    It has the core code of driver
-*@author     Shehab aldeen mohammed abdalah
 */
 
 /*===========================================================================
@@ -35,7 +34,108 @@ SemaphoreHandle_t MCU_SemPerpherialsAPB2 = NULL ;
 SemaphoreHandle_t MCU_SemPerpherialsAHB  = NULL ;
 #endif
 
-
+/**
+ * \section Service_Name
+ * Mcu_Init
+ *
+ * \section Description
+ * To initialize all clocks.
+ *
+ * \section Service_ID
+ * 0x00
+ *
+ * \section Scope
+ * Public
+ *
+ * \section Re-entrancy
+ * Reentrant
+ *
+ *
+ * \section Sync_Async
+ * Synchronous
+ *
+ * 
+ * \section Parameters
+ * \param[in] None 
+ * \param[inout] None
+ * \param[out] None
+ * \return None
+ * 
+ *
+ * \section Rational
+ * To initialize all clocks.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * \section Activity_Diagram
+ *
+ * @startuml 
+ * start
+ * :check on coming pointer NULL_PTR == ConfigPtr or not(go to det report if yes);
+ * #yellow:Create four binary semaphores and take from them only MCU_SemConfig_Clock **__(FreeRTOS Cfg on)__**; 
+ * :select HSE[16]; 
+ * :wait until the clock is stabled;
+ * :if clock is not stable go to infinite loop; 
+ * :Turn off or on external clock and clock security based **on configration**; 
+ * :Select clock prescalers for peripherals and buses based on values put in Cfg.c;  
+ * #yellow:Give binary semaphores MCU_SemConfig_Clock **__(FreeRTOS Cfg on)__**; 
+ *
+ * end
+ *
+ * @enduml
+ *
+ *
+ *
+ * \section Sequence_Diagram
+ *
+ * @startuml
+ *
+ * == ConfigPtr= NULL_PTR ==
+ *
+ * "Mcu_Init\nFunction" -[#red]> "Det_ReportError\nFunction": **MODULE_ID, Mcu_Init_ID, MCU_E_PARAM_POINTER**
+ * note right #red: Stuck in infinite loop.  
+ *
+ * == FreeRTOS Cfg on ==
+ *
+ * "Mcu_Init\nFunction" -> "xSemaphoreCreateBinary\nFunction":
+ * note right #green: Create semaphore then return handler to it. 
+ *
+ * "Mcu_Init\nFunction" -> "xSemaphoreCreateBinary\nFunction":
+ * note right #green: Create semaphore then return handler to it. 
+ *
+ * "Mcu_Init\nFunction" -> "xSemaphoreGive\nFunction": **MCU_SemPerpherialsAPB1**
+ * note right #green: Gives dedicated semaphore. 
+ *
+ * "Mcu_Init\nFunction" -> "xSemaphoreCreateBinary\nFunction":
+ * note right #green: Create semaphore then return handler to it. 
+ *
+ * "Mcu_Init\nFunction" -> "xSemaphoreGive\nFunction": **MCU_SemPerpherialsAPB2**
+ * note right #green: Gives dedicated semaphore. 
+ *
+ * "Mcu_Init\nFunction" -> "xSemaphoreCreateBinary\nFunction":
+ * note right #green: Create semaphore then return handler to it. 
+ *
+ * "Mcu_Init\nFunction" -> "xSemaphoreGive\nFunction": **MCU_SemPerpherialsAHB**
+ * note right #green: Gives dedicated semaphore. 
+ * 
+ * == LOCAL_Time_limit = 0 ==
+ *
+ * "Mcu_Init\nFunction" -[#red]> "Det_ReportError\nFunction": **MODULE_ID, Mcu_Init_ID, MCU_E_PARAM_POINTER**
+ * note right #red: Stuck in infinite loop.  
+ *
+ * == FreeRTOS Cfg on ==
+ * "Mcu_Init\nFunction" -> "xSemaphoreGive\nFunction": **MCU_SemConfig_Clock**
+ * note right #green: Gives dedicated semaphore. 
+ * @enduml
+ *
+ *
+ *
+ *
+ */
 void   Mcu_Init () {
 	/* check on coming pointer */
 	if (NULL_PTR == ConfigPtr){
@@ -103,19 +203,181 @@ void   Mcu_Init () {
 #endif
 }
 
-Error_State       Mcu_EnumSetPerAPB1(BUS_PERPHERIALS Mcu_Per ) {
+
+
+
+
+
+/**
+ * \section Service_Name
+ * Mcu_EnumSetPerAPB1
+ *
+ * \section Description
+ * Set dedicated peripheral in APB1 bus.
+ *
+ * \section Service_ID
+ * 0x01
+ *
+ * \section Scope
+ * Public
+ *
+ * \section Re-entrancy
+ * Reentrant
+ *
+ *
+ * \section Sync_Async
+ * Synchronous
+ *
+ * 
+ * \section Parameters
+ * \param[in] BUS_PERPHERIALS Mcu_Per 
+ * \param[inout] None
+ * \param[out] None
+ * \return Error_State
+ * 
+ *
+ * \section Rational
+ * Set dedicated peripheral in APB1 bus.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * \section Activity_Diagram
+ *
+ * @startuml 
+ * start
+ * #yellow:Take semaphore MCU_SemPerpherialsAPB1 **__(FreeRTOS Cfg on)__**; 
+ * if (Mcu_Per is in range of peripherals of APB1) then (**yes**)
+ * :enable dedicated peripheral; 
+ * #blue:Return Ok; 
+ * endif
+ * #yellow:Give binary semaphore MCU_SemPerpherialsAPB1 **__(FreeRTOS Cfg on)__**;
+ * #blue:Return Not_Ok;  
+ *
+ * end
+ *
+ * @enduml
+ *
+ *
+ *
+ * \section Sequence_Diagram
+ *
+ * @startuml
+ *
+ * == FreeRTOS Cfg on ==
+ *
+ * "Mcu_EnumSetPerAPB1\nFunction" -> "xSemaphoreTake\nFunction": **MCU_SemPerpherialsAPB1, portMAX_DELAY**
+ * note right #green: Take dedicated semaphore. 
+ *
+ *
+ *
+ * "Mcu_EnumSetPerAPB1\nFunction" -> "xSemaphoreGive\nFunction": **MCU_SemPerpherialsAPB1**
+ * note right #green: Gives dedicated semaphore. 
+ *
+ *
+ * @enduml
+ *
+ *
+ *
+ *
+ */
+Error_State Mcu_EnumSetPerAPB1(BUS_PERPHERIALS Mcu_Per ) {
 #if MCU_DESIGN == MCU_FREERTOS
 	xSemaphoreTake(MCU_SemPerpherialsAPB1,portMAX_DELAY);
 #endif
 	if ( Mcu_Per >= APB1_PER_TIM2  && Mcu_Per <= APB1_PER_DAC ){
 		PerpherialsAPB1 |= Mcu_Per ;
-#if MCU_DESIGN == MCU_FREERTOS
-	xSemaphoreGive(MCU_SemPerpherialsAPB1);
-#endif
 	return E_OK;
 	}
+#if MCU_DESIGN == MCU_FREERTOS
+	xSemaphoreGive(MCU_SemPerpherialsAPB1);
+#endif	
 	return E_NOT_OK ;
 }
+
+
+
+
+
+/**
+ * \section Service_Name
+ * Mcu_EnumSetPerAPB2
+ *
+ * \section Description
+ * Set dedicated peripheral in APB2 bus.
+ *
+ * \section Service_ID
+ * 0x02
+ *
+ * \section Scope
+ * Public
+ *
+ * \section Re-entrancy
+ * Reentrant
+ *
+ *
+ * \section Sync_Async
+ * Synchronous
+ *
+ * 
+ * \section Parameters
+ * \param[in] BUS_PERPHERIALS Mcu_Per 
+ * \param[inout] None
+ * \param[out] None
+ * \return Error_State
+ * 
+ *
+ * \section Rational
+ * Set dedicated peripheral in APB2 bus.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * \section Activity_Diagram
+ *
+ * @startuml 
+ * start
+ * #yellow:Take semaphore MCU_SemPerpherialsAPB2 **__(FreeRTOS Cfg on)__**; 
+ * if (Mcu_Per is in range of peripherals of APB2) then (**yes**)
+ * :enable dedicated peripheral; 
+ * #blue:Return Ok; 
+ * endif
+ * #yellow:Give binary semaphore MCU_SemPerpherialsAPB2 **__(FreeRTOS Cfg on)__**;
+ * #blue:Return Not_Ok;  
+ *
+ * end
+ *
+ * @enduml
+ *
+ *
+ *
+ * \section Sequence_Diagram
+ *
+ * @startuml
+ *
+ * == FreeRTOS Cfg on ==
+ *
+ * "Mcu_EnumSetPerAPB2\nFunction" -> "xSemaphoreTake\nFunction": **MCU_SemPerpherialsAPB2, portMAX_DELAY**
+ * note right #green: Take dedicated semaphore. 
+ *
+ *
+ *
+ * "Mcu_EnumSetPerAPB2\nFunction" -> "xSemaphoreGive\nFunction": **MCU_SemPerpherialsAPB2**
+ * note right #green: Gives dedicated semaphore. 
+ *
+ *
+ * @enduml
+ *
+ *
+ *
+ *
+ */
 
 Error_State       Mcu_EnumSetPerAPB2(BUS_PERPHERIALS Mcu_Per ) {
 #if MCU_DESIGN == MCU_FREERTOS
@@ -123,28 +385,186 @@ Error_State       Mcu_EnumSetPerAPB2(BUS_PERPHERIALS Mcu_Per ) {
 #endif
 	if (Mcu_Per >= APB2_PER_AFIO  && Mcu_Per <= APB2_PER_TIM11){
 		PerpherialsAPB2 |= Mcu_Per ;
+	return E_OK;
+	}
 #if MCU_DESIGN == MCU_FREERTOS
 	xSemaphoreGive(MCU_SemPerpherialsAPB2);
 #endif
-	return E_OK;
-	}
+	
 	return E_NOT_OK ;
 }
 
+
+/**
+ * \section Service_Name
+ * Mcu_EnumSetPerAHB
+ *
+ * \section Description
+ * Set dedicated peripheral in AHB bus.
+ *
+ * \section Service_ID
+ * 0x03
+ *
+ * \section Scope
+ * Public
+ *
+ * \section Re-entrancy
+ * Reentrant
+ *
+ *
+ * \section Sync_Async
+ * Synchronous
+ *
+ * 
+ * \section Parameters
+ * \param[in] BUS_PERPHERIALS Mcu_Per 
+ * \param[inout] None
+ * \param[out] None
+ * \return Error_State
+ * 
+ *
+ * \section Rational
+ * Set dedicated peripheral in AHB bus.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * \section Activity_Diagram
+ *
+ * @startuml 
+ * start
+ * #yellow:Take semaphore MCU_SemPerpherialsAHB **__(FreeRTOS Cfg on)__**; 
+ * if (Mcu_Per is in range of peripherals of AHB) then (**yes**)
+ * :enable dedicated peripheral; 
+ * #blue:Return Ok; 
+ * endif
+ * #yellow:Give binary semaphore MCU_SemPerpherialsAHB **__(FreeRTOS Cfg on)__**;
+ * #blue:Return Not_Ok;  
+ *
+ * end
+ *
+ * @enduml
+ *
+ *
+ *
+ * \section Sequence_Diagram
+ *
+ * @startuml
+ *
+ * == FreeRTOS Cfg on ==
+ *
+ * "Mcu_EnumSetPerAHB\nFunction" -> "xSemaphoreTake\nFunction": **MCU_SemPerpherialsAPB2, portMAX_DELAY**
+ * note right #green: Take dedicated semaphore. 
+ *
+ *
+ *
+ * "Mcu_EnumSetPerAHB\nFunction" -> "xSemaphoreGive\nFunction": **MCU_SemPerpherialsAPB2**
+ * note right #green: Gives dedicated semaphore. 
+ *
+ *
+ * @enduml
+ *
+ *
+ *
+ *
+ */
 Error_State       Mcu_EnumSetPerAHB (BUS_PERPHERIALS Mcu_Per ){
 #if MCU_DESIGN == MCU_FREERTOS
 	xSemaphoreTake(MCU_SemPerpherialsAHB,portMAX_DELAY);
 #endif
 	if (Mcu_Per >= AHB_PER_DMA_1  && Mcu_Per <= AHB_PER_SDIO){
 		PerpherialsAHB  |= Mcu_Per ;
-#if MCU_DESIGN == MCU_FREERTOS
-	xSemaphoreGive(MCU_SemPerpherialsAHB);
-#endif
 	return E_OK;
 	}
+#if MCU_DESIGN == MCU_FREERTOS
+	xSemaphoreGive(MCU_SemPerpherialsAHB);
+#endif	
 	return E_NOT_OK ;
 }
 
+
+/**
+ * \section Service_Name
+ * Mcu_VidRunnable
+ *
+ * \section Description
+ * Set all peripherals seleted by setter.
+ *
+ * \section Service_ID
+ * 0x04
+ *
+ * \section Scope
+ * Public
+ *
+ * \section Re-entrancy
+ * Reentrant
+ *
+ *
+ * \section Sync_Async
+ * Synchronous
+ *
+ * 
+ * \section Parameters
+ * \param[in] None
+ * \param[inout] None
+ * \param[out] None
+ * \return None
+ * 
+ *
+ * \section Rational
+ * Set all peripherals seleted by setter.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * \section Activity_Diagram
+ *
+ * @startuml 
+ * start
+ * if (PerpherialsAPB1 != NULL) then (**yes**)
+ * #green:enable Perpherials of APB1 **(selected from setter function)**; 
+ * endif
+ *
+ * if (PerpherialsAPB2 != NULL) then (**yes**)
+ * #green:enable Perpherials of APB2 **(selected from setter function)**; 
+ * endif
+ * if (PerpherialsAHB != NULL) then (**yes**)
+ * #green:enable Perpherials of AHB **(selected from setter function)**; 
+ * endif 
+ * end
+ *
+ * @enduml
+ *
+ *
+ *
+ * \section Sequence_Diagram
+ *
+ * @startuml
+ *
+ * == Dedicated peripheral buffer != NULL ==
+ *
+ * "Mcu_VidRunnable\nFunction" -> "Mcu_SetMode\nFunction": **PerpherialsAPB1**
+ * note right #green: Enable selected peripherals. 
+ *
+ * "Mcu_VidRunnable\nFunction" -> "Mcu_SetMode\nFunction": **PerpherialsAPB2**
+ * note right #green: Enable selected peripherals. 
+ *
+ * "Mcu_VidRunnable\nFunction" -> "Mcu_SetMode\nFunction": **PerpherialsAHB**
+ * note right #green: Enable selected peripherals. 
+ *
+ *
+ * @enduml
+ *
+ *
+ *
+ *
+ */
 void  Mcu_VidRunnable (void){
 	if (PerpherialsAPB1 != NULL){
 		Mcu_SetMode(PerpherialsAPB1);
@@ -159,8 +579,82 @@ void  Mcu_VidRunnable (void){
 	}
 }
 
+
+
+/**
+ * \section Service_Name
+ * Mcu_SetMode
+ *
+ * \section Description
+ * Set all peripherals seleted by in peripherals buffer.
+ *
+ * \section Service_ID
+ * 0x05
+ *
+ * \section Scope
+ * Public
+ *
+ * \section Re-entrancy
+ * Reentrant
+ *
+ *
+ * \section Sync_Async
+ * Synchronous
+ *
+ * 
+ * \section Parameters
+ * \param[in] None
+ * \param[inout] None
+ * \param[out] None
+ * \return None
+ * 
+ *
+ * \section Rational
+ * Set all peripherals seleted by setter.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * \section Activity_Diagram
+ *
+ * @startuml 
+ * start
+ * if (**McuMode in range of peripherals of APB1?**) then (**yes**)
+ * #green:Enable all selected peripherals selected in the buffer**;
+ * elseif (**McuMode in range of peripherals of APB2?**) then (**yes**) 
+ * #green:Enable all selected peripherals selected in the buffer**;
+ * elseif (**McuMode in range of peripherals of AHB?**) then (**yes**) 
+ * #green:Enable all selected peripherals selected in the buffer**; 
+ * else
+ * #red:Det_ReportError(infinite loop);
+ * endif
+ * end
+ *
+ * @enduml
+ *
+ *
+ *
+ * \section Sequence_Diagram
+ *
+ * @startuml
+ *
+ * == Out of range condition ==
+ *
+ * "Mcu_SetMode\nFunction" -[#red]> "Det_ReportError\nFunction": **MODULE_ID, Mcu_SetMode_ID, MCU_E_PARAM_MODE**
+ * note right #red: Stuck in infinite loop. 
+ *
+ *
+ * @enduml
+ *
+ *
+ *
+ *
+ */
 void Mcu_SetMode (Mcu_ModeType McuMode){
-	McuMode |= McuMode;
+	McuMode |= McuMode;/////////////////////////////////////////////////////////////does this is important???
 	if ( McuMode >= APB1_PER_TIM2  && McuMode <= APB1_PER_DAC ){
 		RCC->APB1ENR  = McuMode ;
 	}
@@ -177,7 +671,57 @@ void Mcu_SetMode (Mcu_ModeType McuMode){
 	}
 }
 
-
+/**
+ * \section Service_Name
+ * Dio_GetVersionInfo
+ *
+ * \section Description
+ * Function to Get the sw_major_version, sw_minor_version & sw_patch_version
+ *
+ * \section Req_ID
+ * 0x06
+ *
+ * \section Scope
+ * Public
+ *
+ * \section Re-entrancy
+ * Reentrant
+ *
+ * \section Sync_Async
+ * Synchronous
+ *
+ * \section Parameters
+ * \param[in] None
+ * \param[inout] None
+ * \param[out] VersionInfo 
+ * \return None
+ * 
+ *
+ * \section Rational
+ *  Service to get the version information of this module.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * \section Activity_Diagram
+ *
+ * @startuml 
+ * start
+ * #green:Put ModuleID in elements of versioninfo pointer to structure;
+ * #green:Put Dio Major, Minor and Patch versions in elements of versioninfo pointer to structure;
+ * #green:Put VENDOR_ID in elements of versioninfo pointer to structure; 
+ * end
+ *
+ * @enduml
+ *
+ *
+ *
+ *
+ *
+ */
 void Mcu_GetVersionInfo(Std_VersionInfoType* versioninfo) {
 	versioninfo->moduleID         = MODULE_ID         ;
 	versioninfo->sw_major_version = MCU_MAJOR_VERSION ;

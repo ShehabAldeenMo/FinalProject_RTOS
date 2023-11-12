@@ -15,3 +15,5 @@ This release depends on the sequence of 5 Tasks and 6 functions that work in syn
 6. _**LcdUpdate**_ waits on characters that the user is given till he enters '#' to ensure that the statement that he wants to display is finished. Then Resume every task that is suspended to enter the scheduling sequence again.
 
 7. _**vApplicationIdleHook**_ is call_back_task that calls in the background when the system is in sleep mode to refresh hardware resources.
+
+LinkdIn Post : https://www.linkedin.com/posts/ali-mamdouh-11aa1a233_%D9%82%D8%A7%D9%84%D9%88%D8%A7-%D8%B3%D8%A8%D8%AD%D8%A7%D9%86%D9%83-%D9%84%D8%A7-%D8%B9%D9%84%D9%85-%D9%84%D9%86%D8%A7-%D8%A5%D9%84%D8%A7-activity-7123628448274653185-Tr2f?utm_source=share&utm_medium=member_desktop

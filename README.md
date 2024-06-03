@@ -1,6 +1,6 @@
 ## This release depends on the sequence of 5 Tasks and 6 functions that work in synchronization to handle tasks
 1. _**Init_Task**_ is used to initialize the system with clock and passing clock to specific peripherals that used in system. Initialize all GPIO pins with output push-pull.
-   Initialize uart pins (TX-RX) with each specific purpose. Initialize LCD pins with each specific purpose. Delete initialization task at the end. Here is a sample for its Doxgen sequence diagrame documentation.
+   Initialize uart pins (TX-RX) with each specific purpose. Initialize LCD pins with each specific purpose. Delete initialization task at the end. Here is a sample for Main Doxgen sequence diagrame for more illustration.
 ![image](https://github.com/ShehabAldeenMo/FinalProject_RTOS/assets/144431914/86488088-5519-4398-bf12-47e583c47dcc)
 
 3. _**ManagerTask**_ Transmits the list of options for the user on the putty screen and stops for input from the user then sends this option to queue and notify _**ActionTask**_ then
